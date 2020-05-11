@@ -1,5 +1,6 @@
 package fudan.se.project.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,36 +8,40 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.*;
 
-@Entity
+@Entity                     //实体类的注解，必须注明
+@Table(name = "user")      //指定对应的数据库表
+@JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
 public class User implements UserDetails {
 
-    private static final long serialVersionUID = -6140085056226164016L;
-
+    private static final long serialVersionUID = 1723631884331388023L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "userId")
+    private int userId;
 
-    @Column(unique = true)
-    private String username;
+    @Column(name = "email")
+    private String email;
 
+    @Column(name = "password")
     private String password;
-    private String fullname;
+
+    @Column(name = "identity")
+    private int identity;
 
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     private Set<Authority> authorities = new HashSet<>();
 
 
     public User() {}
-    public User(String username, String password, String fullname, Set<Authority> authorities) {
-        this.username = username;
+    public User(String email, String password, int identity) {
+        this.email = email;
         this.password= password;
-        this.fullname = fullname;
-        this.authorities = authorities;
+        this.identity=identity;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return null;
     }
 
     @Override
@@ -46,8 +51,13 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
+
+    public int getIdentity() {
+        return identity;
+    }
+
 
     @Override
     public boolean isAccountNonExpired() {
@@ -69,28 +79,24 @@ public class User implements UserDetails {
         return true;
     }
 
-    public Long getId() {
-        return id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public String getFullname() {
-        return fullname;
-    }
-
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
+    public void setIdentity(int identity) {
+        this.identity = identity;
     }
 
     public void setAuthorities(Set<Authority> authorities) {

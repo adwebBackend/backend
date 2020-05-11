@@ -9,8 +9,8 @@ import java.util.Set;
 @Entity
 public class Authority implements GrantedAuthority {
 
-    private static final long serialVersionUID = -8974777274465208640L;
 
+    private static final long serialVersionUID = 1021788564957152817L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
