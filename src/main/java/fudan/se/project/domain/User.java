@@ -25,23 +25,28 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "identity")
-    private int identity;
+    public Set<UserRole> getUserRoles() {
+        return userRoles;
+    }
 
-    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    private Set<Authority> authorities = new HashSet<>();
-
+    @OneToMany(mappedBy ="user",cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    private Set<UserRole> userRoles = new HashSet<>();
 
     public User() {}
-    public User(String email, String password, int identity) {
+    public User(String email, String password) {
         this.email = email;
         this.password= password;
-        this.identity=identity;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        Set<GrantedAuthority> authoritySet = new HashSet<>();   //去重
+        for (UserRole role: userRoles) {
+            authoritySet.add(new SimpleGrantedAuthority(role.getRole().getRoleName()));
+        }
+        authorities.addAll(authoritySet);
+        return authorities;
     }
 
     @Override
@@ -52,10 +57,6 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return email;
-    }
-
-    public int getIdentity() {
-        return identity;
     }
 
 
@@ -93,13 +94,5 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public void setIdentity(int identity) {
-        this.identity = identity;
-    }
-
-    public void setAuthorities(Set<Authority> authorities) {
-        this.authorities = authorities;
     }
 }

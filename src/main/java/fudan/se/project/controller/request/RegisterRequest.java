@@ -5,14 +5,12 @@ import java.util.Set;
 public class RegisterRequest {
     private String email;
     private String password;
-    private Set<String> authorities;
 
     public RegisterRequest() {}
 
-    public RegisterRequest(String email, String password, Set<String> authorities) {
+    public RegisterRequest(String email, String password) {
         this.email = email;
         this.password = password;
-        this.authorities = authorities;
     }
 
     public String getEmail() {
@@ -31,12 +29,5 @@ public class RegisterRequest {
         this.password = password;
     }
 
-    public Set<String> getAuthorities() {
-        return authorities;
-    }
-
-    public void setAuthorities(Set<String> authorities) {
-        this.authorities = authorities;
-    }
 }
 

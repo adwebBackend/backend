@@ -7,50 +7,60 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
+@Table(name="authority")
 public class Authority implements GrantedAuthority {
 
-
-    private static final long serialVersionUID = 1021788564957152817L;
+    private static final long serialVersionUID = 5269344455501285844L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
-    private String authority;
+    @Column(name = "auth_name",unique = true)
+    private String authName;
 
-    @ManyToMany(mappedBy = "authorities")
+    @Column(name = "auth_nameZh")
+    private String authNameZh;
+
+    //role_authority
     @JsonIgnore
-    private Set<User> users;
+    @ManyToMany(mappedBy = "roleAuthority")  //,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Role> roles;
 
-    public Authority() {
+    public Authority(){}
+
+    public Authority(String authName, String authNameZh, Set<Role> roles) {
+        this.authName = authName;
+        this.authNameZh = authNameZh;
+        this.roles = roles;
     }
 
-    public Authority(String authority) {
-        this.authority = authority;
+    public String getAuthName() {
+        return authName;
     }
 
-    @Override
-    public String getAuthority() {
-        return authority;
+    public void setAuthName(String authName) {
+        this.authName = authName;
+    }
+
+    public String getAuthNameZh() {
+        return authNameZh;
+    }
+
+    public void setAuthNameZh(String authNameZh) {
+        this.authNameZh = authNameZh;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    /**
+     * from Interface GrantedAuthority
+     * @return authName
+     */
+    @Override
+    public String getAuthority() {
+        return authName;
     }
 
-    public void setAuthority(String authority) {
-        this.authority = authority;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
-    }
 }
