@@ -35,10 +35,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String token = request.getHeader("Authorization");
         if (!StringUtils.isEmpty(token)){
             try {
-                String email = jwtTokenUtil.getUsernameFromToken(token);
-                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                String userId = jwtTokenUtil.getUserIdFromToken(token);
+                if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     //通过用户名获取用户信息
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
                     //验证jwt是否过期
                     if (jwtTokenUtil.validateToken(token, userDetails)) {
                     /*

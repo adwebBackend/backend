@@ -25,6 +25,18 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "gender")
+    private int gender;
+
+    @Column(name = "avatar")
+    private String avatar;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "nickName")
+    private String nickName;
+
     public Set<UserRole> getUserRoles() {
         return userRoles;
     }
@@ -33,9 +45,13 @@ public class User implements UserDetails {
     private Set<UserRole> userRoles = new HashSet<>();
 
     public User() {}
-    public User(String email, String password) {
+    public User(String email, String password, int gender, String avatar, String name, String nickName) {
         this.email = email;
         this.password= password;
+        this.gender=gender;
+        this.avatar=avatar;
+        this.name=name;
+        this.nickName=nickName;
     }
 
     @Override
@@ -56,9 +72,28 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
+        return userId+"";
+    }
+
+    public String getEmail() {
         return email;
     }
 
+    public int getGender(){
+        return gender;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
 
     @Override
     public boolean isAccountNonExpired() {
@@ -94,5 +129,21 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setGender(int gender) {
+        this.gender = gender;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 }

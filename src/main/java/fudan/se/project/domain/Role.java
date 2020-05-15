@@ -18,7 +18,7 @@ public class Role implements Serializable,GrantedAuthority {
 
     private static final long serialVersionUID = -4835130585182561640L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "role_name")

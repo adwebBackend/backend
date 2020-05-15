@@ -1,5 +1,6 @@
 package fudan.se.project.service;
 
+import fudan.se.project.domain.Role;
 import fudan.se.project.repository.RoleRepository;
 import fudan.se.project.repository.UserRoleRepository;
 import fudan.se.project.security.jwt.JwtTokenUtil;
@@ -24,15 +25,18 @@ public class AuthService {
     public String register(RegisterRequest request) {
         String email = request.getEmail();
         User searchUser = userRepository.findByEmail(email);
+
         //用户名没有重复
         if(searchUser == null) {
             CharSequence charSequence = request.getPassword();
             String password  = encode_password(charSequence);
             createStudent(email,password);
             return "success";     //success
+        }else {
+            return searchUser.getUsername();
         }
 
-        return "existed account";     //用户名已存在
+        //return "existed account";     //用户名已存在
     }
 
     public String login(String username, String password) {
@@ -46,8 +50,7 @@ public class AuthService {
 
     public void createStudent(String email, String password){
         //新建用户
-        User user = new User(email,password);
+        User user = new User(email,password,1,"1","1","1");
         userRepository.save(user);
     }
-
 }

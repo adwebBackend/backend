@@ -28,19 +28,19 @@ public class JwtTokenUtil implements Serializable {
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder().addClaims(claims)
-                .setSubject(user.getUsername())
+                .setSubject(user.getUserId()+"")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtConfigProperties.getValidity()))
                 .signWith(SignatureAlgorithm.HS512, jwtConfigProperties.getSecret()).compact();
     }
 
-    public String getUsernameFromToken(String jwtToken) {
+    public String getUserIdFromToken(String jwtToken) {
         return getClaimFromToken(jwtToken, Claims::getSubject);
     }
 
     public boolean validateToken(String jwtToken, UserDetails userDetails) {
-        final String username = getUsernameFromToken(jwtToken);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(jwtToken));
+        final String userId = getUserIdFromToken(jwtToken);
+        return (userId.equals(userDetails.getUsername()) && !isTokenExpired(jwtToken));
     }
 
     private Date getExpirationDateFromToken(String jwtToken) {

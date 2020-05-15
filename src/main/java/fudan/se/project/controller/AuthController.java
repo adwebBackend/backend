@@ -23,7 +23,7 @@ import com.alibaba.fastjson.JSONException;
 
 
 @RestController
-@Table(name = "user")
+@Table(name = "authority")
 @JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
 @Validated
 public class AuthController {
@@ -40,6 +40,7 @@ public class AuthController {
     @PostMapping(value = "/register", produces = "application/json")
     @ResponseBody
     public ResponseEntity<?> register(@Validated @RequestBody RegisterRequest request, BindingResult bindingResult) throws JSONException {
+        System.out.println(111);
         JSONObject result = Tool.DealParamError(bindingResult);
         if (result != null){
             return new ResponseEntity<>(result.toJSONString(), HttpStatus.OK);
