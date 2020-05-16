@@ -97,14 +97,8 @@ public class Tool {
 
     public static ResponseEntity<?> getResponseEntity(String message) throws JSONException {
         JSONObject result = new JSONObject();
-        if(message.equals("success")) {
-            result.put("message", message);
-            return new ResponseEntity<>(result.toJSONString(), HttpStatus.OK);
-        }
-        else {
-            result.put("message", message);
-            return new ResponseEntity<>(result.toJSONString(), HttpStatus.BAD_REQUEST);
-        }
+        result.put("message", message);
+        return new ResponseEntity<>(result.toJSONString(), HttpStatus.OK);
     }
 
     public static ResponseEntity<?> getResponseEntity(JSONObject result) throws JSONException {

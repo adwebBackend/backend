@@ -1,18 +1,25 @@
 package fudan.se.project.controller.request;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 public class LoginRequest {
-    private String username;
+    @NotNull(message = "邮箱不能为空")
+    @NotBlank(message = "邮箱不能为空")
+    private String email;
+    @NotNull(message = "密码不能为空")
+    @NotBlank(message = "密码不能为空")
     private String password;
 
     public LoginRequest() {}
 
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

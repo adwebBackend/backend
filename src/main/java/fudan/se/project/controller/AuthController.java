@@ -16,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import fudan.se.project.tool.Tool;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import java.util.HashMap;
 import java.util.Map;
 import com.alibaba.fastjson.JSONObject;
@@ -35,22 +36,70 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @CrossOrigin(origins = "*")
+    @GetMapping(value = "/send_email", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<?> send_email(@Validated @RequestParam(value = "email") String email) throws JSONException {
+        String message = authService.send_email(email);
+        return Tool.getResponseEntity(message);
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping(value = "/forget_email", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<?> forget_email(@Validated @RequestParam(value = "email") String email) throws JSONException {
+        String message = authService.forget_email(email);
+        return Tool.getResponseEntity(message);
+    }
 
     @CrossOrigin(origins = "*")
     @PostMapping(value = "/register", produces = "application/json")
     @ResponseBody
     public ResponseEntity<?> register(@Validated @RequestBody RegisterRequest request, BindingResult bindingResult) throws JSONException {
-        System.out.println(111);
         JSONObject result = Tool.DealParamError(bindingResult);
         if (result != null){
-            return new ResponseEntity<>(result.toJSONString(), HttpStatus.OK);
+            return new ResponseEntity<>(result.toJSONString(), HttpStatus.BAD_REQUEST);
         }
         String message = authService.register(request);
         return Tool.getResponseEntity(message);
     }
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request.getUsername(), request.getPassword()));
+
+    @CrossOrigin(origins = "*")
+    @PostMapping(value = "/forget_password", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<?> forget_password(@Validated @RequestBody RegisterRequest request, BindingResult bindingResult) throws JSONException {
+        JSONObject result = Tool.DealParamError(bindingResult);
+        if (result != null){
+            return new ResponseEntity<>(result.toJSONString(), HttpStatus.BAD_REQUEST);
+        }
+        String message = authService.forget_password(request);
+        return Tool.getResponseEntity(message);
+    }
+
+
+        @PostMapping("/login")
+    public ResponseEntity<?> login(@Validated @RequestBody LoginRequest request, BindingResult bindingResult) throws JSONException{
+        JSONObject result = Tool.DealParamError(bindingResult);
+        if (result != null){
+            return new ResponseEntity<>(result.toJSONString(), HttpStatus.BAD_REQUEST);
+        }
+        result = new JSONObject();
+        String message = authService.login(request.getEmail(), request.getPassword());
+        if(message.contains("success")){
+            //----------test------------
+            String token = message.substring(8);
+//            System.out.println("login success, token = " + token);
+            //----------------------------
+            result.put("message", "success");
+            result.put("token",token);
+            result.put("role",message.charAt(7));
+//            result.put("userDetails",userDetailsService.loadUserByUsername(username));
+            //用jsonobject.toString()方式传输
+            return new ResponseEntity<>(result.toJSONString(), HttpStatus.OK); //200
+        }
+        else {   //wrong password/use not found
+            return Tool.getResponseEntity(message);
+        }
     }
 
     /**

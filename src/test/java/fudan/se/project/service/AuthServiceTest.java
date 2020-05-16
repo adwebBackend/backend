@@ -11,6 +11,8 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -24,8 +26,19 @@ class AuthServiceTest extends AbstractJUnit4SpringContextTests {
     private AuthService authService;
     @Test
     void register() {
-        RegisterRequest request = new RegisterRequest("aaa.qq.com", "123456");
+        RegisterRequest request = new RegisterRequest("aaa.qq.com", "123456",1234);
         System.out.println(authService.register(request));
+    }
+
+    @Test
+    void send_email() {
+        Long last=new Date().getTime();
+        for (int i=0;i<20;i++){
+            while (new Date().getTime()-last<1000){
+            }
+            last=new Date().getTime();
+            System.out.println(authService.send_email("1801859073@1632.com"));
+        }
     }
 
     @Test

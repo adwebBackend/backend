@@ -45,13 +45,9 @@ public class User implements UserDetails {
     private Set<UserRole> userRoles = new HashSet<>();
 
     public User() {}
-    public User(String email, String password, int gender, String avatar, String name, String nickName) {
+    public User(String email, String password) {
         this.email = email;
         this.password= password;
-        this.gender=gender;
-        this.avatar=avatar;
-        this.name=name;
-        this.nickName=nickName;
     }
 
     @Override
