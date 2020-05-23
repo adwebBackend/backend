@@ -10,6 +10,7 @@ import java.util.*;
 @Table(name = "course")      //指定对应的数据库表
 @JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
 public class Course implements Serializable {
+    private static final long serialVersionUID = 8016473487158372652L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "courseId")
@@ -34,9 +35,9 @@ public class Course implements Serializable {
         return projects;
     }
 
-    @OneToMany(mappedBy ="course",cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinTable(name="cpInclusion",joinColumns={@JoinColumn(name="courseId")}
-            ,inverseJoinColumns={@JoinColumn(name="projectId")})
+    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @JoinTable(name="cpInclusion",joinColumns=@JoinColumn(name="courseId")
+            ,inverseJoinColumns=@JoinColumn(name="projectId"))
     private List<Project> projects = new ArrayList<>();
 
     public int getCourseId() {

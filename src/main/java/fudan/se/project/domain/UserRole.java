@@ -3,10 +3,12 @@ package fudan.se.project.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "user_role")
-public class UserRole {
+public class UserRole implements Serializable {
+    private static final long serialVersionUID = -1681492033817355790L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -2,15 +2,26 @@ package fudan.se.project.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity                     //实体类的注解，必须注明
 @Table(name = "participate")      //指定对应的数据库表
 @JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
-public class Participate {
+@IdClass(Participate.class)
+public class Participate implements Serializable {
+    private static final long serialVersionUID = 43956522808459025L;
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     @Id
     @Column(name = "userId")
     private int userId;

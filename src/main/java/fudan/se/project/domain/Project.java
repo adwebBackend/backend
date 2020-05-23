@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity                     //实体类的注解，必须注明
 @Table(name = "project")      //指定对应的数据库表
 @JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
-public class Project {
+public class Project implements Serializable {
+    private static final long serialVersionUID = 9026158182154127983L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "projectId")
