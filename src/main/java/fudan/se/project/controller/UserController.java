@@ -37,7 +37,7 @@ public class UserController {
     private CourseService courseService;
 //    @Autowired
 //    private FileService fileService;
-
+//测试
     @Autowired
     public UserController(UserService userService){this.userService = userService;}
 
