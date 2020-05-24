@@ -3,6 +3,8 @@ package fudan.se.project.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fudan.se.project.domain.User;
+import fudan.se.project.service.CourseService;
+import fudan.se.project.service.FileService;
 import fudan.se.project.service.UserService;
 import fudan.se.project.tool.Tool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.persistence.Table;
 import javax.servlet.http.HttpServletRequest;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,6 +33,10 @@ import java.util.Locale;
 public class UserController {
 
     private UserService userService;
+    @Autowired
+    private CourseService courseService;
+    @Autowired
+    private FileService fileService;
 
     @Autowired
     public UserController(UserService userService){this.userService = userService;}
@@ -95,7 +102,7 @@ public class UserController {
     @GetMapping("view_personal_info")
     @ResponseBody
     public ResponseEntity<?> viewPersonalInfo(){
-        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         User user = userService.viewPersonalInfo(userId);
         JSONObject result = new JSONObject();
         if (user == null){
@@ -110,5 +117,39 @@ public class UserController {
         result.put("birthday",user.getBirthday());
         result.put("message","success");
         return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
+    }
+
+    @PostMapping("/modify_avatar")
+    @ResponseBody
+    public ResponseEntity<?> modifyAvatar(@Validated @RequestParam(value = "avatar") MultipartFile avatar) throws IOException {
+        JSONObject message = new JSONObject();
+        //检查是否是图片
+        BufferedImage bi = ImageIO.read(avatar.getInputStream());
+        if (bi == null){
+            message.put("message","An image is required");
+            return new ResponseEntity<>(message.toJSONString(),HttpStatus.BAD_REQUEST);
+        }
+        //检查图片大小
+        if (avatar.getSize() > 100){
+            message.put("message","Image is too large");
+            return new ResponseEntity<>(message.toJSONString(),HttpStatus.BAD_REQUEST);
+        }
+        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        String path = fileService.saveFile(avatar);
+        String result = userService.modifyAvatar(userId,path);
+        if (result.equals("success")){
+            return new ResponseEntity<>(result,HttpStatus.OK);
+        }
+        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/view_avatar")
+    @ResponseBody
+    public ResponseEntity<?> viewAvatar(){
+        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        String result = userService.viewAvatar(userId);
+        if (result.equals("failure"))
+            return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

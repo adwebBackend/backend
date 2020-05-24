@@ -6,6 +6,7 @@ import fudan.se.project.repository.UserRepository;
 import fudan.se.project.repository.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
 
     public String modifyNickName(int userId,String nickName){
         User user = userRepository.findByUserId(userId);
@@ -80,5 +82,23 @@ public class UserService {
 
     public User viewPersonalInfo(int userId){
         return userRepository.findByUserId(userId);
+    }
+
+    public String modifyAvatar(int userId, String avatarPath){
+        User user = userRepository.findByUserId(userId);
+        if (user != null){
+            user.setAvatar(avatarPath);
+            userRepository.save(user);
+            return "success";
+        }
+        return "failure";
+    }
+
+    public String viewAvatar(int userId){
+        User user = userRepository.findByUserId(userId);
+        if (user != null){
+            return user.getAvatar();
+        }
+        return "failure";
     }
 }
