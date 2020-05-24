@@ -105,8 +105,7 @@ public class AuthService {
 
 
     public String forget_email(String email){
-        send(email,1);
-        return null;
+        return send(email,1);
     }
 
 

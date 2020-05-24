@@ -7,6 +7,7 @@ import fudan.se.project.repository.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -45,6 +46,30 @@ public class UserService {
                 return "failure";
             }
             user.setName(name);
+            userRepository.save(user);
+            return "success";
+        }
+        else{
+            return "failure";
+        }
+    }
+
+    public String modifySignature(int userId,String signature){
+        User user = userRepository.findByUserId(userId);
+        if (user != null){
+            user.setSignature(signature);
+            userRepository.save(user);
+            return "success";
+        }
+        else{
+            return "failure";
+        }
+    }
+
+    public String modifyBirthday(int userId,Date birthday){
+        User user = userRepository.findByUserId(userId);
+        if (user != null){
+            user.setBirthday(birthday);
             userRepository.save(user);
             return "success";
         }

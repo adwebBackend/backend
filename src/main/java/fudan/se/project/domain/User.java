@@ -37,6 +37,12 @@ public class User implements UserDetails {
     @Column(name = "nickName")
     private String nickName;
 
+    @Column(name = "signature")
+    private String signature;
+
+    @Column(name = "birthday")
+    private Date birthday;
+
     public Set<UserRole> getUserRoles() {
         return userRoles;
     }
@@ -91,6 +97,14 @@ public class User implements UserDetails {
         return nickName;
     }
 
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -141,5 +155,13 @@ public class User implements UserDetails {
 
     public void setNickName(String nickName) {
         this.nickName = nickName;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
     }
 }
