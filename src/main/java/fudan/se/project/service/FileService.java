@@ -15,9 +15,9 @@ public class FileService {
         //上传文件名
         String filename = UUID.randomUUID() + suffix;
         //服务器端保存的文件对象
-        String saveDir = "D:\\Documents\\AD web\\pj\\courseImages";
+        String saveDir = "/usr/local/images";
         File serverFile = new File(saveDir + filename);
-
+        System.out.println(serverFile.getAbsolutePath());
         if(!serverFile.exists()) {
             //先得到文件的上级目录，并创建上级目录，在创建文件
             serverFile.getParentFile().mkdir();

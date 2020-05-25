@@ -8,6 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
 
@@ -94,9 +100,38 @@ public class UserService {
         return "failure";
     }
 
-    public String viewAvatar(int userId){
+    public String viewAvatar(HttpServletResponse response, int userId){
         User user = userRepository.findByUserId(userId);
         if (user != null){
+            String origin_filepath = user.getAvatar();
+            String filepath = origin_filepath.replace("\\", "/");
+            File file = new File(filepath);
+
+            byte[] buff = new byte[1024];
+            BufferedInputStream bis = null;
+            ServletOutputStream os;
+            try {
+                os = response.getOutputStream();
+                bis = new BufferedInputStream(new FileInputStream(file));
+                int i = bis.read(buff);
+                while (i != -1) {
+                    os.write(buff, 0, buff.length);
+                    os.flush();
+                    i = bis.read(buff);
+                }
+                os.close();
+            }
+            catch (IOException e) {
+                return "failure";
+            } finally {
+                if (bis != null) {
+                    try {
+                        bis.close();
+                    } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+            }
             return user.getAvatar();
         }
         return "failure";
