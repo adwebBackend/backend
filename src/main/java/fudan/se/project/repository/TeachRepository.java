@@ -15,4 +15,5 @@ public interface TeachRepository extends CrudRepository<Teach,Integer> {
     Teach findByCourseIdAndUserId(int courseId,int userId);
     void deleteAllByCourseId(int courseId);
     void deleteByCourseIdAndUserId(int courseId,int userId);
+    Teach findByCourseId(int courseId);
 }

@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -186,6 +187,7 @@ public class CourseService {
         return null;
     }
 
+    @Transactional
     public String deleteCourse(int userId, int courseId){
         if (authService.checkAuthor("teacher",userId)){
             Teach teach = teachRepository.findByCourseIdAndUserId(courseId,userId);

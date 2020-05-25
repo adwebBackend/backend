@@ -111,7 +111,11 @@ public class AuthController {
         String message = "Welcome to 2020 AD web project. ";
         response.put("message", message);
         return ResponseEntity.ok(response);
+//        RegisterRequest request = new RegisterRequest("17302010033@fudan.edu.cn","zdz");
+////        System.out.println(authService.register(request));
+//        return ResponseEntity.ok(authService.register(request));
     }
+
 
 }
 

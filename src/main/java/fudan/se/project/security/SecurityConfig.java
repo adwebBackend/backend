@@ -51,6 +51,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/send_email").permitAll()
                 .antMatchers("/forget_email").permitAll()
                 .antMatchers("/forget_password").permitAll()
+                .antMatchers("/index").permitAll()
+                .antMatchers("/modify_avatar").permitAll()
+                .antMatchers("/view_avatar").permitAll()
+                .antMatchers("/create_project").permitAll()
+                .antMatchers("/delete_course").permitAll()
+                .antMatchers("/delete_project").permitAll()
+                .antMatchers("/project_basic_info").permitAll()
+                .antMatchers("/group_members").permitAll()
                 .anyRequest().authenticated();
 
 //      Here we use JWT(Json Web Token) to authenticate the user.

@@ -75,7 +75,7 @@ public class AuthService {
         try {
             MimeMessage message = createSimpleMail(session, email, code);
             Transport transport = session.getTransport();
-            transport.connect("3223826042@qq.com", "vbedktrimapkchij");
+            transport.connect("smtp.qq.com", "3223826042@qq.com","vbedktrimapkchij");
             transport.sendMessage(message, message.getAllRecipients());
 
             transport.close();
