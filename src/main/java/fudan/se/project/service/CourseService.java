@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+@SuppressWarnings("Duplicates")
 @Service
 public class CourseService {
     @Autowired
@@ -29,11 +30,15 @@ public class CourseService {
     private ParticipateRepository participateRepository;
     @Autowired
     private  ProjectRepository projectRepository;
+    @Autowired
+    private CpInclusionRepository cpInclusionRepository;
+    @Autowired
+    private AuthService authService;
 
     private final int NUM_PER_PAGE = 9;
 
     public String createCourse(int userId, JSONObject params){
-        if (checkAuthor("teacher",userId)){
+        if (authService.checkAuthor("teacher",userId)){
             String courseName = params.getString("course_name");
             String backgroundImage = params.getString("background_image");
             String description = params.getString("description");
@@ -52,48 +57,9 @@ public class CourseService {
     }
 
 
-    public String saveFile(MultipartFile file){
-        //文件后缀名
-        String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-        //上传文件名
-        String filename = UUID.randomUUID() + suffix;
-        //服务器端保存的文件对象
-        String saveDir = "D:\\Documents\\AD web\\pj\\courseImages";
-        File serverFile = new File(saveDir + filename);
-
-        if(!serverFile.exists()) {
-            //先得到文件的上级目录，并创建上级目录，在创建文件
-            serverFile.getParentFile().mkdir();
-            try {
-                //创建文件
-                serverFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        //将上传的文件写入到服务器端文件内
-        try {
-            file.transferTo(serverFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return serverFile.getAbsolutePath();
-    }
-
-    public boolean checkAuthor(String author,int userId){
-        User user = userRepository.findByUserId(userId);
-        Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
-        for (GrantedAuthority grantedAuthority:authorities) {
-            if (grantedAuthority.getAuthority().equals(author)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public JSONObject teacherViewCourses(int userId,int page){
         JSONObject result = new JSONObject();
-        if (checkAuthor("teacher",userId)){
+        if (authService.checkAuthor("teacher",userId)){
 
             List<Teach> teaches = teachRepository.findAllByUserId(userId);
             int total = teaches.size();
@@ -116,7 +82,7 @@ public class CourseService {
 
     public JSONObject studentViewCourses(int userId,int page){
         JSONObject result = new JSONObject();
-        if (checkAuthor("student",userId)){
+        if (authService.checkAuthor("student",userId)){
 
             List<Take> takes = takeRepository.findAllByUserId(userId);
             int total = takes.size();
@@ -139,7 +105,7 @@ public class CourseService {
 
     public JSONObject studentViewUnselectedCourses(int userId,int page){
         JSONObject result = new JSONObject();
-        if (checkAuthor("student",userId)){
+        if (authService.checkAuthor("student",userId)){
             List<Take> takes = takeRepository.findAllByUserId(userId);
             List<Integer> limited = new ArrayList<>();
             for (Take take:takes){
@@ -177,7 +143,7 @@ public class CourseService {
     }
 
     public List<Project> courseProjects(int userId,int courseId){
-        if (checkAuthor("teacher",userId)){
+        if (authService.checkAuthor("teacher",userId)){
             Course course = courseRepository.findByCourseId(courseId);
             return course.getProjects();
         }
@@ -185,7 +151,7 @@ public class CourseService {
     }
 
     public List<Project> selectedProjects(int userId,int courseId){
-        if (checkAuthor("student",userId)){
+        if (authService.checkAuthor("student",userId)){
             Course course = courseRepository.findByCourseId(courseId);
             List<Project> projects = course.getProjects();
             List<Integer> limited = new ArrayList<>();
@@ -203,7 +169,7 @@ public class CourseService {
     }
 
     public List<Project> unselectedProjects(int userId,int courseId){
-        if (checkAuthor("student",userId)){
+        if (authService.checkAuthor("student",userId)){
             Course course = courseRepository.findByCourseId(courseId);
             List<Project> projects = course.getProjects();
             List<Integer> limited = new ArrayList<>();
@@ -218,5 +184,33 @@ public class CourseService {
             return result;
         }
         return null;
+    }
+
+    public String deleteCourse(int userId, int courseId){
+        if (authService.checkAuthor("teacher",userId)){
+            Teach teach = teachRepository.findByCourseIdAndUserId(courseId,userId);
+            if (teach == null){
+                return "course not found or it's not your course";
+            }
+            teachRepository.deleteAllByCourseId(courseId);
+            takeRepository.deleteAllByCourseId(courseId);
+            cpInclusionRepository.deleteAllByCourseId(courseId);
+            courseRepository.deleteByCourseId(courseId);
+            return "success";
+        }
+        return "failure";
+    }
+
+    public String addCourse(int userId, int courseId){
+        if (authService.checkAuthor("student",userId)){
+            Course course = courseRepository.findByCourseId(courseId);
+            if (course == null){
+                return "course not found";
+            }
+            Take take = new Take(userId,courseId);
+            takeRepository.save(take);
+            return "success";
+        }
+        return "failure";
     }
 }

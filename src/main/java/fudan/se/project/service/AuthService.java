@@ -9,6 +9,7 @@ import fudan.se.project.domain.User;
 import fudan.se.project.repository.UserRepository;
 import fudan.se.project.controller.request.RegisterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -74,7 +75,7 @@ public class AuthService {
         try {
             MimeMessage message = createSimpleMail(session, email, code);
             Transport transport = session.getTransport();
-            transport.connect("3223826042@qq.com", "vbedktrimapkchij");
+            transport.connect("3223826042@qq.com", "vbedktrimapkchij","");
             transport.sendMessage(message, message.getAllRecipients());
 
             transport.close();
@@ -200,5 +201,16 @@ public class AuthService {
         // 邮件的文本内容
         message.setContent("【FDPBL】"+code+"(注册验证码)，此验证码只用于注册你的FDPBL账号，有效期15分钟，请勿将验证码泄露给他人。", "text/html;charset=UTF-8");
         return message;
+    }
+
+    public boolean checkAuthor(String author, int userId){
+        User user = userRepository.findByUserId(userId);
+        Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
+        for (GrantedAuthority grantedAuthority:authorities) {
+            if (grantedAuthority.getAuthority().equals(author)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
