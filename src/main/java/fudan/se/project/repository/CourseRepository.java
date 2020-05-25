@@ -13,4 +13,6 @@ public interface CourseRepository extends CrudRepository<Course,Integer> {
 
     @Query(value = "select * from course where courseId not in(:limited)", nativeQuery = true)
     List<Course> findCourseByLimited(List<Integer> limited);
+
+    void deleteByCourseId(int courseId);
 }

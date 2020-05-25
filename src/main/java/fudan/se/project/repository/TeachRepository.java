@@ -12,4 +12,7 @@ import java.util.List;
 public interface TeachRepository extends CrudRepository<Teach,Integer> {
     Page<Teach> findByUserId(int userId, Pageable pageable);
     List<Teach> findAllByUserId(int uerId);
+    Teach findByCourseIdAndUserId(int courseId,int userId);
+    void deleteAllByCourseId(int courseId);
+    void deleteByCourseIdAndUserId(int courseId,int userId);
 }

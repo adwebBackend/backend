@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CpInclusionRepository extends CrudRepository<CpInclusion,Long> {
+    void deleteAllByCourseId(int courseId);
 }

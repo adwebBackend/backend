@@ -14,4 +14,6 @@ public interface TakeRepository extends CrudRepository<Take,Long> {
     Page<Take> findByUserId(int userId, Pageable pageable);
     List<Take> findAllByUserId(int uerId);
     List<Take> findAllByCourseId(int courseId);
+    void deleteAllByCourseId(int courseId);
+    void deleteAllByUserId(int userId);
 }
