@@ -3,6 +3,9 @@ package fudan.se.project.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
@@ -15,9 +18,9 @@ public class FileService {
         //上传文件名
         String filename = UUID.randomUUID() + suffix;
         //服务器端保存的文件对象
-        String saveDir = "/usr/local/images";
+        String saveDir = "D:\\Documents\\AD web\\pj\\courseImages\\";
         File serverFile = new File(saveDir + filename);
-        System.out.println(serverFile.getAbsolutePath());
+
         if(!serverFile.exists()) {
             //先得到文件的上级目录，并创建上级目录，在创建文件
             serverFile.getParentFile().mkdir();
@@ -36,4 +39,20 @@ public class FileService {
         }
         return serverFile.getAbsolutePath();
     }
+
+//    public byte[] fileToByte(File img) throws Exception {
+//        byte[] bytes = null;
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        try {
+//            BufferedImage bi;
+//            bi = ImageIO.read(img);
+//            ImageIO.write(bi, "png", baos);
+//            bytes = baos.toByteArray();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            baos.close();
+//        }
+//        return bytes;
+//    }
 }

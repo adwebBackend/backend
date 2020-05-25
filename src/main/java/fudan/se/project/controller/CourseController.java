@@ -6,7 +6,9 @@ import fudan.se.project.domain.Course;
 import fudan.se.project.domain.Project;
 import fudan.se.project.domain.User;
 import fudan.se.project.service.CourseService;
+import fudan.se.project.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
@@ -25,13 +27,15 @@ import java.util.List;
 public class CourseController {
     @Autowired
     private CourseService courseService;
+    @Autowired
+    private FileService fileService;
 
     @CrossOrigin(origins = "*")
     @PostMapping("/create_course")
     @ResponseBody
     public ResponseEntity<?> createCourse(@RequestParam("file") MultipartFile file, @RequestBody JSONObject params){
         int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        String backgroundImage = courseService.saveFile(file);
+        String backgroundImage = fileService.saveFile(file);
         params.put("background_image",backgroundImage);
         return ResponseEntity.ok(courseService.createCourse(userId,params));
     }
@@ -123,5 +127,29 @@ public class CourseController {
             return ResponseEntity.ok("failure");
         }
         return ResponseEntity.ok(projects);
+    }
+
+    @GetMapping("/delete_course")
+    @ResponseBody
+    public ResponseEntity<?> deleteCourse(@Validated @RequestParam(value = "course_id")int courseId){
+//        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        int userId = 7;
+        String result = courseService.deleteCourse(userId,courseId);
+        if (result.equals("success")){
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/add_course")
+    @ResponseBody
+    public ResponseEntity<?> addCourse(@Validated @RequestParam(value = "course_id")int courseId){
+//        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        int userId = 1;
+        String result = courseService.addCourse(userId,courseId);
+        if (result.equals("success")){
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
     }
 }

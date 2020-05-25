@@ -35,7 +35,7 @@ public class Course implements Serializable {
         return projects;
     }
 
-    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JoinTable(name="cpInclusion",joinColumns=@JoinColumn(name="courseId")
             ,inverseJoinColumns=@JoinColumn(name="projectId"))
     private List<Project> projects = new ArrayList<>();
