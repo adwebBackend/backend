@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import javax.persistence.Table;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -107,7 +108,7 @@ public class UserController {
     @GetMapping("view_personal_info")
     @ResponseBody
     public ResponseEntity<?> viewPersonalInfo(){
-        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         User user = userService.viewPersonalInfo(userId);
         JSONObject result = new JSONObject();
         if (user == null){
@@ -143,8 +144,7 @@ public class UserController {
             message.put("message","Image is too large");
             return new ResponseEntity<>(message.toJSONString(),HttpStatus.BAD_REQUEST);
         }
-//        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        int userId = 1;
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         String path = fileService.saveFile(avatar);
         String result = userService.modifyAvatar(userId,path);
         if (result.equals("success")){
@@ -155,14 +155,8 @@ public class UserController {
 
     @GetMapping("/view_avatar")
     @ResponseBody
-    public ResponseEntity<?> viewAvatar() throws Exception {
-//        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        int userId = 1;
-        String result = userService.viewAvatar(userId);
-        if (result.equals("failure"))
-            return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
-
-        return new ResponseEntity<>(result,HttpStatus.OK);
+    public void viewAvatar(HttpServletResponse response) throws Exception {
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        userService.viewAvatar(response,userId);
     }
-
 }
