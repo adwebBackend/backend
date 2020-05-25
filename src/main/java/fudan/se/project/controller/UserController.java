@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fudan.se.project.domain.User;
 import fudan.se.project.service.CourseService;
-import fudan.se.project.service.FileService;
+//import fudan.se.project.service.FileService;
 import fudan.se.project.service.UserService;
 import fudan.se.project.tool.Tool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +35,9 @@ public class UserController {
     private UserService userService;
     @Autowired
     private CourseService courseService;
-    @Autowired
-    private FileService fileService;
-
+//    @Autowired
+//    private FileService fileService;
+//测试
     @Autowired
     public UserController(UserService userService){this.userService = userService;}
 
@@ -119,29 +119,29 @@ public class UserController {
         return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
     }
 
-    @PostMapping("/modify_avatar")
-    @ResponseBody
-    public ResponseEntity<?> modifyAvatar(@Validated @RequestParam(value = "avatar") MultipartFile avatar) throws IOException {
-        JSONObject message = new JSONObject();
-        //检查是否是图片
-        BufferedImage bi = ImageIO.read(avatar.getInputStream());
-        if (bi == null){
-            message.put("message","An image is required");
-            return new ResponseEntity<>(message.toJSONString(),HttpStatus.BAD_REQUEST);
-        }
-        //检查图片大小
-        if (avatar.getSize() > 100){
-            message.put("message","Image is too large");
-            return new ResponseEntity<>(message.toJSONString(),HttpStatus.BAD_REQUEST);
-        }
-        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        String path = fileService.saveFile(avatar);
-        String result = userService.modifyAvatar(userId,path);
-        if (result.equals("success")){
-            return new ResponseEntity<>(result,HttpStatus.OK);
-        }
-        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-    }
+//    @PostMapping("/modify_avatar")
+//    @ResponseBody
+//    public ResponseEntity<?> modifyAvatar(@Validated @RequestParam(value = "avatar") MultipartFile avatar) throws IOException {
+//        JSONObject message = new JSONObject();
+//        //检查是否是图片
+//        BufferedImage bi = ImageIO.read(avatar.getInputStream());
+//        if (bi == null){
+//            message.put("message","An image is required");
+//            return new ResponseEntity<>(message.toJSONString(),HttpStatus.BAD_REQUEST);
+//        }
+//        //检查图片大小
+//        if (avatar.getSize() > 100){
+//            message.put("message","Image is too large");
+//            return new ResponseEntity<>(message.toJSONString(),HttpStatus.BAD_REQUEST);
+//        }
+//        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+//        String path = fileService.saveFile(avatar);
+//        String result = userService.modifyAvatar(userId,path);
+//        if (result.equals("success")){
+//            return new ResponseEntity<>(result,HttpStatus.OK);
+//        }
+//        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+//    }
 
     @GetMapping("/view_avatar")
     @ResponseBody
