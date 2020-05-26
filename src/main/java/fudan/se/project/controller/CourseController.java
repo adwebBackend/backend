@@ -7,6 +7,7 @@ import fudan.se.project.domain.Project;
 import fudan.se.project.domain.User;
 import fudan.se.project.service.CourseService;
 import fudan.se.project.service.FileService;
+import fudan.se.project.tool.Tool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class CourseController {
         int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         String backgroundImage = fileService.saveFile(file);
         params.put("background_image",backgroundImage);
-        return ResponseEntity.ok(courseService.createCourse(userId,params));
+        return Tool.getResponseEntity(courseService.createCourse(userId,params));
     }
 
     @GetMapping("/teacher_view_courses")
@@ -45,7 +46,7 @@ public class CourseController {
     public ResponseEntity<?> teacherViewCourses(int page){
         int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
 
-        return ResponseEntity.ok( courseService.teacherViewCourses(userId,page));
+        return Tool.getResponseEntity( courseService.teacherViewCourses(userId,page));
     }
 
     @GetMapping("/student_view_courses")
@@ -53,14 +54,14 @@ public class CourseController {
     public ResponseEntity<?> studentViewCourses(int page){
         int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
 
-        return ResponseEntity.ok( courseService.studentViewCourses(userId,page));
+        return Tool.getResponseEntity( courseService.studentViewCourses(userId,page));
     }
 
     @GetMapping("student_view_unselected_courses")
     @ResponseBody
     public ResponseEntity<?> studentViewUnselectedCourses(int page){
         int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        return ResponseEntity.ok(courseService.studentViewUnselectedCourses(userId,page));
+        return Tool.getResponseEntity(courseService.studentViewUnselectedCourses(userId,page));
     }
 
     @GetMapping("/course_basic_info")
@@ -70,7 +71,7 @@ public class CourseController {
         JSONObject result = new JSONObject();
         if (course == null){
             result.put("message","failure");
-            return ResponseEntity.ok(result);
+            return Tool.getResponseEntity(result);
         }
         String courseName = course.getCourseName();
         String backgroundImage = course.getPicture();
@@ -82,7 +83,7 @@ public class CourseController {
         result.put("description",description);
         result.put("start_time",startTime);
         result.put("end_time",endTime);
-        return ResponseEntity.ok(result);
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/course_students")
@@ -90,9 +91,15 @@ public class CourseController {
     public ResponseEntity<?> courseStudents(int courseId){
         List<User> students = courseService.courseStudents(courseId);
         if (students == null){
-            return ResponseEntity.ok("failure");
+            return Tool.getResponseEntity("failure");
         }
-        return ResponseEntity.ok(students);
+        JSONObject result = new JSONObject();
+        for (User user:students){
+            result.put("student_name",user.getUsername());
+            result.put("avatar",user.getAvatar());
+        }
+
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/course_projects")
@@ -102,9 +109,18 @@ public class CourseController {
 
         List<Project> projects = courseService.courseProjects(userId,courseId);
         if (projects == null){
-            return ResponseEntity.ok("failure");
+            return Tool.getResponseEntity("failure");
         }
-        return ResponseEntity.ok(projects);
+        JSONObject result = new JSONObject();
+
+        for (Project project:projects){
+            result.put("project_id",project.getProjectId());
+            result.put("name",project.getProjectName());
+            result.put("introduce",project.getProjectIntroduce());
+            result.put("start_time",project.getProjectStartTime());
+            result.put("end_time",project.getProjectEndTime());
+        }
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/selected_projects")
@@ -113,9 +129,18 @@ public class CourseController {
         int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         List<Project> projects = courseService.selectedProjects(userId,courseId);
         if (projects == null){
-            return ResponseEntity.ok("failure");
+            return Tool.getResponseEntity("failure");
         }
-        return ResponseEntity.ok(projects);
+        JSONObject result = new JSONObject();
+
+        for (Project project:projects){
+            result.put("project_id",project.getProjectId());
+            result.put("name",project.getProjectName());
+            result.put("introduce",project.getProjectIntroduce());
+            result.put("start_time",project.getProjectStartTime());
+            result.put("end_time",project.getProjectEndTime());
+        }
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/unselected_projects")
@@ -124,7 +149,7 @@ public class CourseController {
         int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         List<Project> projects = courseService.unselectedProjects(userId,courseId);
         if (projects == null){
-            return ResponseEntity.ok("failure");
+            return Tool.getResponseEntity("failure");
         }
         return ResponseEntity.ok(projects);
     }

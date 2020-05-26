@@ -54,7 +54,7 @@ public class UserController {
             return Tool.getErrorJson("parameter error");
         }
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        return ResponseEntity.ok(userService.modifyNickName(userId,nickName));
+        return Tool.getResponseEntity(userService.modifyNickName(userId,nickName));
     }
 
     @GetMapping("modify_gender")
@@ -64,7 +64,7 @@ public class UserController {
             return Tool.getErrorJson("parameter error");
         }
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        return ResponseEntity.ok(userService.modifyGender(userId,gender));
+        return Tool.getResponseEntity(userService.modifyGender(userId,gender));
     }
 
     @GetMapping("modify_name")
@@ -74,7 +74,7 @@ public class UserController {
             return Tool.getErrorJson("parameter error");
         }
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        return ResponseEntity.ok(userService.modifyName(userId,name));
+        return Tool.getResponseEntity(userService.modifyName(userId,name));
     }
 
     @GetMapping("modify_signature")
@@ -84,7 +84,7 @@ public class UserController {
             return Tool.getErrorJson("parameter error");
         }
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        return ResponseEntity.ok(userService.modifySignature(userId,signature));
+        return Tool.getResponseEntity(userService.modifySignature(userId,signature));
     }
 
     @GetMapping("modify_birthday")
@@ -99,7 +99,7 @@ public class UserController {
                 return Tool.getErrorJson("parameter error");
             }
             int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-            return ResponseEntity.ok(userService.modifyBirthday(userId,bir));
+            return Tool.getResponseEntity(userService.modifyBirthday(userId,bir));
         }catch (ParseException e){
             return Tool.getErrorJson("parameter error");
         }
@@ -108,7 +108,8 @@ public class UserController {
     @GetMapping("view_personal_info")
     @ResponseBody
     public ResponseEntity<?> viewPersonalInfo(){
-        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+//        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        int userId = 6;
         User user = userService.viewPersonalInfo(userId);
         JSONObject result = new JSONObject();
         if (user == null){
