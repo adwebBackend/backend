@@ -21,6 +21,7 @@ import javax.persistence.Table;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings("Duplicates")
 @RestController
 @Table(name = "course")
 @JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
@@ -151,7 +152,16 @@ public class CourseController {
         if (projects == null){
             return Tool.getResponseEntity("failure");
         }
-        return ResponseEntity.ok(projects);
+        JSONObject result = new JSONObject();
+
+        for (Project project:projects){
+            result.put("project_id",project.getProjectId());
+            result.put("name",project.getProjectName());
+            result.put("introduce",project.getProjectIntroduce());
+            result.put("start_time",project.getProjectStartTime());
+            result.put("end_time",project.getProjectEndTime());
+        }
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/delete_course")
@@ -160,10 +170,12 @@ public class CourseController {
 //        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         int userId = 7;
         String result = courseService.deleteCourse(userId,courseId);
+        JSONObject response = new JSONObject();
+        response.put("message",result);
         if (result.equals("success")){
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            return new ResponseEntity<>(response.toJSONString(), HttpStatus.OK);
         }
-        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response.toJSONString(), HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/add_course")
@@ -172,9 +184,11 @@ public class CourseController {
 //        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         int userId = 1;
         String result = courseService.addCourse(userId,courseId);
+        JSONObject response = new JSONObject();
+        response.put("message",result);
         if (result.equals("success")){
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            return new ResponseEntity<>(response.toJSONString(), HttpStatus.OK);
         }
-        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response.toJSONString(), HttpStatus.BAD_REQUEST);
     }
 }
