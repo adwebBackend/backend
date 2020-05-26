@@ -146,6 +146,7 @@ public class UserController {
             return new ResponseEntity<>(message.toJSONString(),HttpStatus.BAD_REQUEST);
         }
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+
         String path = fileService.saveFile(avatar);
         String result = userService.modifyAvatar(userId,path);
         if (result.equals("success")){
@@ -156,9 +157,16 @@ public class UserController {
 
     @GetMapping("/view_avatar")
     @ResponseBody
-    public void viewAvatar(HttpServletResponse response) throws Exception {
+    public ResponseEntity<?> viewAvatar() throws Exception {
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        userService.viewAvatar(response,userId);
+        JSONObject result = new JSONObject();
+        String message = userService.viewAvatar(userId);
+        result.put("message",message);
+        if (message.equals("failure")){
+            return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
+
+        }
+        return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
     }
 }
 
