@@ -37,7 +37,7 @@ public class FileService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return serverFile.getAbsolutePath();
+        return "images/" + filename;
     }
 
 //    public byte[] fileToByte(File img) throws Exception {
