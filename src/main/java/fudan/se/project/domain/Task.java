@@ -1,4 +1,5 @@
 package fudan.se.project.domain;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
@@ -9,7 +10,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "task")      //指定对应的数据库表
 @JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
-@IdClass(Task.class)
+
 public class Task implements Serializable {
     private static final long serialVersionUID = -6291727854847739988L;
 
@@ -31,6 +32,20 @@ public class Task implements Serializable {
 
     @Column(name = "importance")
     private int importance;
+
+    @JsonIgnore
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinTable(name="ptInclusion",joinColumns={@JoinColumn(name="taskId")}
+            ,inverseJoinColumns={@JoinColumn(name="projectId")})
+    private Project project;
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
 
     public int getTaskId() {
         return taskId;
