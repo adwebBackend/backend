@@ -108,8 +108,8 @@ public class UserController {
     @GetMapping("view_personal_info")
     @ResponseBody
     public ResponseEntity<?> viewPersonalInfo(){
-//        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        int userId = 6;
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+//        int userId = 6;
         User user = userService.viewPersonalInfo(userId);
         JSONObject result = new JSONObject();
         if (user == null){

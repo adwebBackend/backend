@@ -167,8 +167,8 @@ public class CourseController {
     @GetMapping("/delete_course")
     @ResponseBody
     public ResponseEntity<?> deleteCourse(@Validated @RequestParam(value = "course_id")int courseId){
-//        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        int userId = 7;
+        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+//        int userId = 7;
         String result = courseService.deleteCourse(userId,courseId);
         JSONObject response = new JSONObject();
         response.put("message",result);
@@ -181,8 +181,8 @@ public class CourseController {
     @GetMapping("/add_course")
     @ResponseBody
     public ResponseEntity<?> addCourse(@Validated @RequestParam(value = "course_id")int courseId){
-//        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        int userId = 1;
+        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+//        int userId = 1;
         String result = courseService.addCourse(userId,courseId);
         JSONObject response = new JSONObject();
         response.put("message",result);
