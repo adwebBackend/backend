@@ -117,7 +117,7 @@ public class UserController {
         }
         result.put("email",user.getEmail());
         result.put("nickname",user.getNickName());
-        result.put("name",user.getUsername());
+        result.put("name",user.getName());
         result.put("gender",user.getGender());
         result.put("signature",user.getSignature());
         result.put("birthday",user.getBirthday());

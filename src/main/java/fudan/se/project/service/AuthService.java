@@ -182,6 +182,7 @@ public class AuthService {
     public void createStudent(String email, String password){
         //新建用户
         User user = new User(email,password);
+        user.setAvatar("/usr/local/moren.jpg");
         userRepository.save(user);
         Role role = roleRepository.findByRoleName("student");
         UserRole userRole = new UserRole(user,role);
