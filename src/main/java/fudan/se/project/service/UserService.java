@@ -140,9 +140,14 @@ public class UserService {
         return "failure";
     }
 
-    public String modifyPassword(int userId,String newPass,String oldPass){
+    public String modifyPassword(int userId, JSONObject passObj){
         User user = userRepository.findByUserId(userId);
         if (user != null){
+            String newPass = passObj.getString("newPass");
+            String oldPass = passObj.getString("oldPass");
+            if (newPass == null || oldPass == null){
+                return "param error";
+            }
             String pass = user.getPassword();
             String checkPass = DigestUtils.md5DigestAsHex(((CharSequence) oldPass).toString().getBytes());
             if (pass.equals(checkPass)){
