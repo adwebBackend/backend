@@ -7,6 +7,7 @@ import fudan.se.project.repository.UserRepository;
 import fudan.se.project.repository.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
@@ -135,6 +136,22 @@ public class UserService {
 //                }
 //            }
             return user.getAvatar();
+        }
+        return "failure";
+    }
+
+    public String modifyPassword(int userId,String newPass,String oldPass){
+        User user = userRepository.findByUserId(userId);
+        if (user != null){
+            String pass = user.getPassword();
+            String checkPass = DigestUtils.md5DigestAsHex(((CharSequence) oldPass).toString().getBytes());
+            if (pass.equals(checkPass)){
+                String password = DigestUtils.md5DigestAsHex(((CharSequence) newPass).toString().getBytes());
+                user.setPassword(password);
+                userRepository.save(user);
+                return "success";
+            }
+            return "incorrect old password";
         }
         return "failure";
     }
