@@ -149,10 +149,11 @@ public class UserController {
 
         String path = fileService.saveFile(avatar);
         String result = userService.modifyAvatar(userId,path);
+        message.put("message",result);
         if (result.equals("success")){
-            return new ResponseEntity<>(result,HttpStatus.OK);
+            return new ResponseEntity<>(message.toJSONString(),HttpStatus.OK);
         }
-        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(message.toJSONString(), HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/view_avatar")
