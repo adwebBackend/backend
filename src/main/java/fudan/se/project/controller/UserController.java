@@ -172,10 +172,11 @@ public class UserController {
 
     @PostMapping("/modify_password")
     @ResponseBody
-    public ResponseEntity<?> modifyPassword(@Validated @RequestParam(value = "new") String newPass,@Validated @RequestParam(value = "old")String oldPass){
+    public ResponseEntity<?> modifyPassword(@Validated @RequestBody JSONObject pass){
         JSONObject result = new JSONObject();
-        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        String message = userService.modifyPassword(userId,newPass,oldPass);
+        int userId = 13;
+//        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        String message = userService.modifyPassword(userId,pass);
         result.put("message",message);
         if (message.equals("success")){
             return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
