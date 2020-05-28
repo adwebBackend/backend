@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fudan.se.project.domain.User;
 import fudan.se.project.service.CourseService;
-//import fudan.se.project.service.FileService;
 import fudan.se.project.service.FileService;
 import fudan.se.project.service.UserService;
 import fudan.se.project.tool.Tool;
@@ -174,8 +173,7 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<?> modifyPassword(@Validated @RequestBody JSONObject pass){
         JSONObject result = new JSONObject();
-        int userId = 13;
-//        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         String message = userService.modifyPassword(userId,pass);
         result.put("message",message);
         if (message.equals("success")){
@@ -184,4 +182,3 @@ public class UserController {
         return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
     }
 }
-

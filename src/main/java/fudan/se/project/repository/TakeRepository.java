@@ -11,6 +11,7 @@ import java.util.List;
 
 @Repository
 public interface TakeRepository extends CrudRepository<Take,Long> {
+    Take findByCourseIdAndUserId(int courseId,int userId);
     Page<Take> findByUserId(int userId, Pageable pageable);
     List<Take> findAllByUserId(int uerId);
     List<Take> findAllByCourseId(int courseId);

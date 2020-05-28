@@ -1,5 +1,6 @@
 package fudan.se.project.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fudan.se.project.domain.Course;
@@ -35,17 +36,21 @@ public class CourseController {
     @CrossOrigin(origins = "*")
     @PostMapping("/create_course")
     @ResponseBody
-    public ResponseEntity<?> createCourse(@RequestParam("file") MultipartFile file, @RequestBody JSONObject params){
-        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+    public ResponseEntity<?> createCourse(@Validated @RequestParam("file") MultipartFile file, @Validated @RequestParam("params") String params){
+        JSONObject json= JSONObject.parseObject(params);
+        if (json.getString("course_name")==null||json.getString("course_name").equals("")||json.getString("description")==null||json.getString("description").equals("")||json.getString("start_time")==null||json.getString("end_time")==null||json.getDate("start_time").getTime()<=new Date().getTime()||json.getDate("start_time").getTime()>json.getDate("end_time").getTime()){
+            return Tool.getErrorJson("parameter error");
+        }
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         String backgroundImage = fileService.saveFile(file);
-        params.put("background_image",backgroundImage);
-        return Tool.getResponseEntity(courseService.createCourse(userId,params));
+        json.put("background_image",backgroundImage);
+        return Tool.getResponseEntity(courseService.createCourse(userId,json));
     }
 
     @GetMapping("/teacher_view_courses")
     @ResponseBody
     public ResponseEntity<?> teacherViewCourses(int page){
-        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
 
         return Tool.getResponseEntity( courseService.teacherViewCourses(userId,page));
     }
@@ -53,7 +58,7 @@ public class CourseController {
     @GetMapping("/student_view_courses")
     @ResponseBody
     public ResponseEntity<?> studentViewCourses(int page){
-        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
 
         return Tool.getResponseEntity( courseService.studentViewCourses(userId,page));
     }
@@ -61,134 +66,119 @@ public class CourseController {
     @GetMapping("student_view_unselected_courses")
     @ResponseBody
     public ResponseEntity<?> studentViewUnselectedCourses(int page){
-        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         return Tool.getResponseEntity(courseService.studentViewUnselectedCourses(userId,page));
     }
 
     @GetMapping("/course_basic_info")
     @ResponseBody
-    public ResponseEntity<?> courseBasicInfo(int courseId){
-        Course course = courseService.courseBasicInfo(courseId);
-        JSONObject result = new JSONObject();
-        if (course == null){
-            result.put("message","failure");
-            return Tool.getResponseEntity(result);
-        }
-        String courseName = course.getCourseName();
-        String backgroundImage = course.getPicture();
-        String description = course.getCourseIntroduce();
-        Date startTime = course.getCourseStartTime();
-        Date endTime = course.getCourseEndTime();
-        result.put("course_name",courseName);
-        result.put("background_image",backgroundImage);
-        result.put("description",description);
-        result.put("start_time",startTime);
-        result.put("end_time",endTime);
-        return Tool.getResponseEntity(result);
+    public ResponseEntity<?> courseBasicInfo(int course_id){
+        return Tool.getResponseEntity(courseService.courseBasicInfo(course_id));
     }
 
     @GetMapping("/course_students")
     @ResponseBody
-    public ResponseEntity<?> courseStudents(int courseId){
-        List<User> students = courseService.courseStudents(courseId);
-        if (students == null){
-            return Tool.getResponseEntity("failure");
+    public ResponseEntity<?> courseStudents(int course_id){
+        List<User> students = courseService.courseStudents(course_id);
+
+        if (students.size() == 0){
+            return Tool.getErrorJson("failure");
         }
         JSONObject result = new JSONObject();
+        JSONArray studentArray = new JSONArray();
         for (User user:students){
-            result.put("student_name",user.getUsername());
-            result.put("avatar",user.getAvatar());
+            JSONObject studentJSON = new JSONObject();
+            studentJSON.put("student_name",user.getName());
+            studentJSON.put("avatar",user.getAvatar());
+            studentArray.add(studentJSON);
         }
-
+        result.put("students",studentArray);
         return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/course_projects")
     @ResponseBody
-    public ResponseEntity<?> courseProjects(int courseId){
-        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+    public ResponseEntity<?> courseProjects(int course_id){
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
 
-        List<Project> projects = courseService.courseProjects(userId,courseId);
+        List<Project> projects = courseService.courseProjects(userId,course_id);
         if (projects == null){
-            return Tool.getResponseEntity("failure");
+            return Tool.getErrorJson("failure");
         }
         JSONObject result = new JSONObject();
-
+        JSONArray projectArray = new JSONArray();
         for (Project project:projects){
-            result.put("project_id",project.getProjectId());
-            result.put("name",project.getProjectName());
-            result.put("introduce",project.getProjectIntroduce());
-            result.put("start_time",project.getProjectStartTime());
-            result.put("end_time",project.getProjectEndTime());
+            JSONObject projectJSON = new JSONObject();
+            projectJSON.put("project_id",project.getProjectId());
+            projectJSON.put("name",project.getProjectName());
+            projectJSON.put("introduce",project.getProjectIntroduce());
+            projectJSON.put("start_time",project.getProjectStartTime());
+            projectJSON.put("end_time",project.getProjectEndTime());
+            projectArray.add(projectJSON);
         }
+        result.put("projects",projectArray);
         return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/selected_projects")
     @ResponseBody
-    public ResponseEntity<?> selectedProjects(int courseId){
-        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        List<Project> projects = courseService.selectedProjects(userId,courseId);
+    public ResponseEntity<?> selectedProjects(int course_id){
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        List<Project> projects = courseService.selectedProjects(userId,course_id);
         if (projects == null){
-            return Tool.getResponseEntity("failure");
+            return Tool.getErrorJson("failure");
         }
         JSONObject result = new JSONObject();
-
+        JSONArray projectArray = new JSONArray();
         for (Project project:projects){
-            result.put("project_id",project.getProjectId());
-            result.put("name",project.getProjectName());
-            result.put("introduce",project.getProjectIntroduce());
-            result.put("start_time",project.getProjectStartTime());
-            result.put("end_time",project.getProjectEndTime());
+            JSONObject projectJSON = new JSONObject();
+            projectJSON.put("project_id",project.getProjectId());
+            projectJSON.put("name",project.getProjectName());
+            projectJSON.put("introduce",project.getProjectIntroduce());
+            projectJSON.put("start_time",project.getProjectStartTime());
+            projectJSON.put("end_time",project.getProjectEndTime());
+            projectArray.add(projectJSON);
         }
+        result.put("projects",projectArray);
         return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/unselected_projects")
     @ResponseBody
-    public ResponseEntity<?> unselectedProjects(int courseId){
-        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        List<Project> projects = courseService.unselectedProjects(userId,courseId);
+    public ResponseEntity<?> unselectedProjects(int course_id){
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        List<Project> projects = courseService.unselectedProjects(userId,course_id);
         if (projects == null){
-            return Tool.getResponseEntity("failure");
+            return Tool.getErrorJson("failure");
         }
         JSONObject result = new JSONObject();
-
+        JSONArray projectArray = new JSONArray();
         for (Project project:projects){
-            result.put("project_id",project.getProjectId());
-            result.put("name",project.getProjectName());
-            result.put("introduce",project.getProjectIntroduce());
-            result.put("start_time",project.getProjectStartTime());
-            result.put("end_time",project.getProjectEndTime());
+            JSONObject projectJSON = new JSONObject();
+            projectJSON.put("project_id",project.getProjectId());
+            projectJSON.put("name",project.getProjectName());
+            projectJSON.put("introduce",project.getProjectIntroduce());
+            projectJSON.put("start_time",project.getProjectStartTime());
+            projectJSON.put("end_time",project.getProjectEndTime());
+            projectArray.add(projectJSON);
         }
+        result.put("projects",projectArray);
         return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/delete_course")
     @ResponseBody
-    public ResponseEntity<?> deleteCourse(@Validated @RequestParam(value = "course_id")int courseId){
-        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
-        String result = courseService.deleteCourse(userId,courseId);
-        JSONObject response = new JSONObject();
-        response.put("message",result);
-        if (result.equals("success")){
-            return new ResponseEntity<>(response.toJSONString(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(response.toJSONString(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> deleteCourse(@Validated @RequestParam(value = "course_id")int course_id){
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        JSONObject result = courseService.deleteCourse(userId,course_id);
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/add_course")
     @ResponseBody
-    public ResponseEntity<?> addCourse(@Validated @RequestParam(value = "course_id")int courseId){
-        int userId = Integer.parseInt((((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 1;
-        String result = courseService.addCourse(userId,courseId);
-        JSONObject response = new JSONObject();
-        response.put("message",result);
-        if (result.equals("success")){
-            return new ResponseEntity<>(response.toJSONString(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(response.toJSONString(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> addCourse(@Validated @RequestParam(value = "course_id") int course_id){
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        JSONObject result = courseService.addCourse(userId,course_id);
+        return Tool.getResponseEntity(result);
     }
 }

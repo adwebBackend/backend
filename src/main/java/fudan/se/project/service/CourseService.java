@@ -1,8 +1,10 @@
 package fudan.se.project.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import fudan.se.project.domain.*;
 import fudan.se.project.repository.*;
+import fudan.se.project.tool.Tool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -65,12 +67,20 @@ public class CourseService {
             List<Teach> teaches = teachRepository.findAllByUserId(userId);
             int total = teaches.size();
             if (Math.ceil((total + 0.0)/NUM_PER_PAGE) >= page){
-                List<Course> courses = new ArrayList<>();
+                JSONArray courseArray = new JSONArray();
                 Page<Teach> teachPage = teachRepository.findByUserId(userId, PageRequest.of(page - 1, NUM_PER_PAGE));
                 for (Teach teach:teachPage){
-                    courses.add(courseRepository.findByCourseId(teach.getCourseId()));
+                    JSONObject courseJSON = new JSONObject();
+                    Course course=courseRepository.findByCourseId(teach.getCourseId());
+                    courseJSON.put("course_id",course.getCourseId());
+                    courseJSON.put("course_name",course.getCourseName());
+                    courseJSON.put("background_image",course.getPicture());
+                    courseJSON.put("description",course.getCourseIntroduce());
+                    courseJSON.put("start_time",course.getCourseStartTime());
+                    courseJSON.put("end_time",course.getCourseEndTime());
+                    courseArray.add(courseJSON);
                 }
-                result.put("courses",courses);
+                result.put("courses",courseArray);
                 result.put("total",total);
                 return result;
             }
@@ -88,12 +98,23 @@ public class CourseService {
             List<Take> takes = takeRepository.findAllByUserId(userId);
             int total = takes.size();
             if (Math.ceil((total + 0.0)/NUM_PER_PAGE) >= page){
-                List<Course> courses = new ArrayList<>();
+                JSONArray courseArray = new JSONArray();
                 Page<Take> takePage = takeRepository.findByUserId(userId, PageRequest.of(page - 1, NUM_PER_PAGE));
                 for (Take take:takePage){
-                    courses.add(courseRepository.findByCourseId(take.getCourseId()));
+                    JSONObject courseJSON = new JSONObject();
+                    Course course=courseRepository.findByCourseId(take.getCourseId());
+                    Teach teach=teachRepository.findByCourseId(course.getCourseId());
+                    User teacher=userRepository.findByUserId(teach.getUserId());
+                    courseJSON.put("course_id",course.getCourseId());
+                    courseJSON.put("course_name",course.getCourseName());
+                    courseJSON.put("background_image",course.getPicture());
+                    courseJSON.put("description",course.getCourseIntroduce());
+                    courseJSON.put("start_time",course.getCourseStartTime());
+                    courseJSON.put("end_time",course.getCourseEndTime());
+                    courseJSON.put("teacher_name",teacher.getName());
+                    courseArray.add(courseJSON);
                 }
-                result.put("courses",courses);
+                result.put("courses",courseArray);
                 result.put("total",total);
                 return result;
             }
@@ -115,11 +136,22 @@ public class CourseService {
             List<Course> unselected = courseRepository.findCourseByLimited(limited);
             int total = unselected.size();
             if (Math.ceil((total + 0.0)/NUM_PER_PAGE) >= page){
-                List<Course> courses = new ArrayList<>();
-                for (int i = (page - 1)*NUM_PER_PAGE;i < page*NUM_PER_PAGE;i ++){
-                    courses.add(unselected.get(i));
+                JSONArray courseArray = new JSONArray();
+                for (int i = (page - 1)*NUM_PER_PAGE;i < page*NUM_PER_PAGE&&i<total;i ++){
+                    JSONObject courseJSON = new JSONObject();
+                    Course course=courseRepository.findByCourseId(unselected.get(i).getCourseId());
+                    Teach teach=teachRepository.findByCourseId(course.getCourseId());
+                    User teacher=userRepository.findByUserId(teach.getUserId());
+                    courseJSON.put("course_id",course.getCourseId());
+                    courseJSON.put("course_name",course.getCourseName());
+                    courseJSON.put("background_image",course.getPicture());
+                    courseJSON.put("description",course.getCourseIntroduce());
+                    courseJSON.put("start_time",course.getCourseStartTime());
+                    courseJSON.put("end_time",course.getCourseEndTime());
+                    courseJSON.put("teacher_name",teacher.getName());
+                    courseArray.add(courseJSON);
                 }
-                result.put("courses",courses);
+                result.put("courses",courseArray);
                 result.put("total",total);
                 return result;
             }
@@ -130,8 +162,24 @@ public class CourseService {
         return result;
     }
 
-    public Course courseBasicInfo(int courseId){
-        return courseRepository.findByCourseId(courseId);
+    public JSONObject courseBasicInfo(int courseId){
+        JSONObject result = new JSONObject();
+        Course course=courseRepository.findByCourseId(courseId);
+        if (course == null){
+            result.put("message","failure");
+            return result;
+        }
+
+        Teach teach=teachRepository.findByCourseId(course.getCourseId());
+        User teacher=userRepository.findByUserId(teach.getUserId());
+
+        result.put("course_name",course.getCourseName());
+        result.put("background_image",course.getPicture());
+        result.put("description",course.getCourseIntroduce());
+        result.put("start_time",course.getCourseStartTime());
+        result.put("end_time",course.getCourseEndTime());
+        result.put("teacher_name",teacher.getName());
+        return result;
     }
 
     public List<User> courseStudents(int courseId){
@@ -143,76 +191,90 @@ public class CourseService {
         return students;
     }
 
-    public List<Project> courseProjects(int userId,int courseId){
-        if (authService.checkAuthor("teacher",userId)){
-            Course course = courseRepository.findByCourseId(courseId);
-            return course.getProjects();
+    public List<Project> courseProjects(int userId,int courseId) {
+        Teach teach = teachRepository.findByCourseIdAndUserId(courseId, userId);
+        if (teach == null) {
+            return null;
         }
-        return null;
+
+        Course course = courseRepository.findByCourseId(courseId);
+        return course.getProjects();
     }
 
-    public List<Project> selectedProjects(int userId,int courseId){
-        if (authService.checkAuthor("student",userId)){
-            Course course = courseRepository.findByCourseId(courseId);
-            List<Project> projects = course.getProjects();
-            List<Integer> limited = new ArrayList<>();
-            for (Project project:projects){
-                limited.add(project.getProjectId());
-            }
-            List<Participate> participates = participateRepository.findParticipateByUserIdAndLimited(userId,limited);
-            List<Project> result = new ArrayList<>();
-            for (Participate participate:participates){
-                result.add(projectRepository.findByProjectId(participate.getProjectId()));
-            }
-            return result;
+    public List<Project> selectedProjects(int userId,int courseId) {
+        if (takeRepository.findByCourseIdAndUserId(courseId, userId) == null) {
+            return null;
         }
-        return null;
+
+        Course course = courseRepository.findByCourseId(courseId);
+        List<Project> projects = course.getProjects();
+        List<Integer> limited = new ArrayList<>();
+        for (Project project : projects) {
+            limited.add(project.getProjectId());
+        }
+        List<Participate> participates = participateRepository.findParticipateByUserIdAndLimited(userId, limited);
+        List<Project> result = new ArrayList<>();
+        for (Participate participate : participates) {
+            result.add(projectRepository.findByProjectId(participate.getProjectId()));
+        }
+        return result;
     }
 
-    public List<Project> unselectedProjects(int userId,int courseId){
-        if (authService.checkAuthor("student",userId)){
-            Course course = courseRepository.findByCourseId(courseId);
-            List<Project> projects = course.getProjects();
-            List<Integer> limited = new ArrayList<>();
-            for (Project project:projects){
-                limited.add(project.getProjectId());
-            }
-            List<Participate> participates = participateRepository.findParticipateByUserIdAndNotLimited(userId,limited);
-            List<Project> result = new ArrayList<>();
-            for (Participate participate:participates){
-                result.add(projectRepository.findByProjectId(participate.getProjectId()));
-            }
-            return result;
+    public List<Project> unselectedProjects(int userId,int courseId) {
+        if (takeRepository.findByCourseIdAndUserId(courseId, userId) == null) {
+            return null;
         }
-        return null;
+        Course course = courseRepository.findByCourseId(courseId);
+        List<Project> projects = course.getProjects();
+        List<Integer> limited = new ArrayList<>();
+        for (Project project : projects) {
+            limited.add(project.getProjectId());
+        }
+        List<Participate> participates = participateRepository.findAllByUserId(userId);
+
+        List<Project> result = new ArrayList<>();
+        for (Participate participate : participates) {
+            limited.remove(limited.indexOf(participate.getProjectId()));
+        }
+        System.out.println(limited.size());
+
+        for (Integer limit: limited){
+            result.add(projectRepository.findByProjectId(limit));
+        }
+        return result;
     }
 
     @Transactional
-    public String deleteCourse(int userId, int courseId){
-        if (authService.checkAuthor("teacher",userId)){
-            Teach teach = teachRepository.findByCourseIdAndUserId(courseId,userId);
-            if (teach == null){
-                return "course not found or it's not your course";
-            }
-            teachRepository.deleteAllByCourseId(courseId);
-            takeRepository.deleteAllByCourseId(courseId);
-            cpInclusionRepository.deleteAllByCourseId(courseId);
-            courseRepository.deleteByCourseId(courseId);
-            return "success";
+    public JSONObject deleteCourse(int userId, int courseId) {
+        JSONObject result = new JSONObject();
+        Teach teach = teachRepository.findByCourseIdAndUserId(courseId, userId);
+        if (teach == null) {
+            result.put("message","failure");
+            return result;
         }
-        return "failure";
+
+        teachRepository.deleteAllByCourseId(courseId);
+        takeRepository.deleteAllByCourseId(courseId);
+        cpInclusionRepository.deleteAllByCourseId(courseId);
+        courseRepository.deleteByCourseId(courseId);
+        result.put("message","success");
+        return result;
     }
 
-    public String addCourse(int userId, int courseId){
+    public JSONObject addCourse(int userId, int courseId){
+        JSONObject result = new JSONObject();
         if (authService.checkAuthor("student",userId)){
             Course course = courseRepository.findByCourseId(courseId);
             if (course == null){
-                return "course not found";
+                result.put("message","failure");
+                return result;
             }
             Take take = new Take(userId,courseId);
             takeRepository.save(take);
-            return "success";
+            result.put("message","success");
+            return result;
         }
-        return "failure";
+        result.put("message","failure");
+        return result;
     }
 }
