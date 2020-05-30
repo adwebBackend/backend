@@ -95,8 +95,7 @@ public class Task implements Serializable {
         this.importance = importance;
     }
 
-    public Task(int taskId, String taskName, String taskIntroduce, Date taskStartTime, Date taskEndTime, int importance) {
-        this.taskId = taskId;
+    public Task(String taskName, String taskIntroduce, Date taskStartTime, Date taskEndTime, int importance) {
         this.taskName = taskName;
         this.taskIntroduce = taskIntroduce;
         this.taskStartTime = taskStartTime;

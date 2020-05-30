@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import javax.xml.transform.sax.SAXResult;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -18,7 +19,12 @@ public class FileService {
         //上传文件名
         String filename = UUID.randomUUID() + suffix;
         //服务器端保存的文件对象
-        String saveDir = "/var/www/html/images/";
+        String saveDir;
+        if (suffix.equals("pdf")){
+            saveDir = "/var/www/html/files/";
+        }
+        else
+            saveDir = "/var/www/html/images/";
         File serverFile = new File(saveDir + filename);
 
         if(!serverFile.exists()) {
@@ -36,6 +42,9 @@ public class FileService {
             file.transferTo(serverFile);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        if (suffix.equals("pdf")){
+            return "/files" + filename;
         }
         return "images/" + filename;
     }
@@ -55,4 +64,6 @@ public class FileService {
 //        }
 //        return bytes;
 //    }
+
+
 }

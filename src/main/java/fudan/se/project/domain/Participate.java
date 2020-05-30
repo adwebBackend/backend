@@ -3,6 +3,7 @@ package fudan.se.project.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
 import java.io.Serializable;
 
 @Entity                     //实体类的注解，必须注明
@@ -90,13 +91,9 @@ public class Participate implements Serializable {
         this.isGroupLeader = isGroupLeader;
     }
 
-    public Participate(int userId, int projectId, int teacherGrade, int selfGrade, int mutualGrade, int isGroupLeader) {
+    public Participate(int userId, int projectId) {
         this.userId = userId;
         this.projectId = projectId;
-        this.teacherGrade = teacherGrade;
-        this.selfGrade = selfGrade;
-        this.mutualGrade = mutualGrade;
-        this.isGroupLeader = isGroupLeader;
     }
 
     public Participate() {

@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity                     //实体类的注解，必须注明
 @Table(name = "project")      //指定对应的数据库表
@@ -43,6 +45,24 @@ public class Project implements Serializable {
     @JoinTable(name="cpInclusion",joinColumns={@JoinColumn(name="projectId")}
             ,inverseJoinColumns={@JoinColumn(name="courseId")})
     private Course course;
+
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JoinTable(name="ptInclusion",joinColumns=@JoinColumn(name="projectId")
+            ,inverseJoinColumns=@JoinColumn(name="taskId"))
+    private List<Task> tasks = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JoinTable(name="userPost",joinColumns=@JoinColumn(name="projectId")
+            ,inverseJoinColumns=@JoinColumn(name="postId"))
+    private List<Post> posts = new ArrayList<>();
+
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
 
     public Course getCourse() {
         return course;
