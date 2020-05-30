@@ -255,8 +255,9 @@ public class CourseService {
 
         teachRepository.deleteAllByCourseId(courseId);
         takeRepository.deleteAllByCourseId(courseId);
-        cpInclusionRepository.deleteAllByCourseId(courseId);
-        courseRepository.deleteByCourseId(courseId);
+        Course course=courseRepository.findByCourseId(courseId);
+        course.setValid(0);
+        courseRepository.save(course);
         result.put("message","success");
         return result;
     }

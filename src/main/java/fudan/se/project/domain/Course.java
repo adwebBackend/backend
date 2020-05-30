@@ -31,6 +31,9 @@ public class Course implements Serializable {
     @Column(name = "picture")
     private String picture;
 
+    @Column(name = "valid")
+    private int valid;
+
     public List<Project> getProjects() {
         return projects;
     }
@@ -86,6 +89,14 @@ public class Course implements Serializable {
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    public int getValid() {
+        return valid;
+    }
+
+    public void setValid(int valid) {
+        this.valid = valid;
     }
 
     public Course(String courseName, String courseIntroduce, Date courseStartTime, Date courseEndTime, String picture) {
