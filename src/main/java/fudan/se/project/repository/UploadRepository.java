@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface UploadRepository extends CrudRepository<Upload,Long> {
     List<Upload> findAllByProjectId(int projectId);
+    Upload findByFileIdAndUserId(int fileId,int userId);
 }

@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FileRepository extends CrudRepository<File,Long> {
     File findByFileId(int fileId);
+    void deleteByFileId(int fileId);
 }

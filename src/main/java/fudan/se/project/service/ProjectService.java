@@ -180,12 +180,13 @@ public class ProjectService {
                 return result;
             }
             Participate participate = participateRepository.findByProjectIdAndUserId(projectId, userId);
+            Course course = project.getCourse();
 
-            if (!authService.checkAuthor("teacher", userId) && (participate == null || participate.getIsGroupLeader() == 0)) {
+            if (teachRepository.findByCourseIdAndUserId(course.getCourseId(),userId)==null && (participate == null || participate.getIsGroupLeader() == 0)) {
                 result.put("message", "access deny");
                 return result;
             }
-            if (authService.checkAuthor("teacher", userId) || participate.getIsGroupLeader() == 1) {
+            if (teachRepository.findByCourseIdAndUserId(course.getCourseId(),userId)!=null || participate.getIsGroupLeader() == 1) {
                 List<Task> list = project.getTasks();
                 if (list.size() == 0) {
                     result.put("message", "this project has no task");
@@ -425,28 +426,14 @@ public class ProjectService {
         return "failure";
     }
 
-    public String uploadFile(int userId, MultipartFile file, int projectId){
-        User user = userRepository.findByUserId(userId);
-        if (user != null){
-            Project project = projectRepository.findByProjectId(projectId);
-            if (project == null){
-                return "project not found";
-            }
-            String path = fileService.saveFile(file);
-            String name = file.getOriginalFilename().substring(0,file.getOriginalFilename().lastIndexOf("."));
-            Date uploadTime = new Date();
-            File file1 = new File(name,path,uploadTime);
-            fileRepository.save(file1);
-            Upload upload = new Upload(projectId,userId,file1.getFileId());
-            uploadRepository.save(upload);
-            return "success";
-        }
-        return "failure";
-    }
-
     public String teacherScore(int userId,int projectId ,int studentId,int score){
+        Project project = projectRepository.findByProjectId(projectId);
+        if (project == null){
+            return "param error";
+        }
+        Course course = project.getCourse();
 
-        if (authService.checkAuthor("teacher",userId)){
+        if (teachRepository.findByCourseIdAndUserId(course.getCourseId(),userId) != null){
             Participate participate = participateRepository.findByProjectIdAndUserId(projectId,studentId);
             if (participate == null || score < 0 || score > 100){
                 return "param error";

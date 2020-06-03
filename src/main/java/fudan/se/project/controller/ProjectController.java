@@ -209,37 +209,11 @@ public class ProjectController {
 
     }
 
-    @PostMapping("/upload_file")
-    @ResponseBody
-    public ResponseEntity<?> uploadFile(@Validated @RequestParam(value = "file")MultipartFile file, @Validated @RequestParam(value = "Project_id") int projectId){
-        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 10;\
-        JSONObject message = new JSONObject();
-        if (file == null){
-            message.put("message","A PDF file is required");
-            return new ResponseEntity<>(message.toJSONString(),HttpStatus.BAD_REQUEST);
-        }
-        float size = Float.parseFloat(String.valueOf(file.getSize())) / 1024;
-        BigDecimal b = new BigDecimal(size);
-        // 2表示2位 ROUND_HALF_UP表明四舍五入，
-        size = b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-        if (size > 1024){
-            message.put("message","file is too large");
-            return new ResponseEntity<>(message.toJSONString(),HttpStatus.BAD_REQUEST);
-        }
-        String result = projectService.uploadFile(userId,file,projectId);
-        message.put("message",result);
-        if (result.equals("success")){
-            return new ResponseEntity<>(message.toJSONString(),HttpStatus.OK);
-        }
-        return new ResponseEntity<>(message.toJSONString(), HttpStatus.BAD_REQUEST);
-    }
-
     @GetMapping("/teacher_score")
     @ResponseBody
     public ResponseEntity<?> teacherScore(@Validated @RequestParam(value = "project_id") int projectId,@Validated @RequestParam(value = "student_id")int studentId,@Validated @RequestParam(value = "score")int score){
-        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
+//        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        int userId = 7;
         String message = projectService.teacherScore(userId,projectId,studentId,score);
         JSONObject result = new JSONObject();
         result.put("message",message);
@@ -264,8 +238,8 @@ public class ProjectController {
     @GetMapping("/mutual_evaluation")
     @ResponseBody
     public ResponseEntity<?> mutualEvaluation(@Validated @RequestParam(value = "project_id") int projectId,@Validated @RequestParam(value = "student_id")int studentId,@Validated @RequestParam(value = "score")int score){
-//        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        int userId = 6;
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+//        int userId = 6;
         String message = projectService.mutualEvaluation(userId,projectId,studentId,score);
         JSONObject result = new JSONObject();
         result.put("message",message);
@@ -279,8 +253,8 @@ public class ProjectController {
     @GetMapping("/self_evaluation")
     @ResponseBody
     public ResponseEntity<?> selfEvaluation(@Validated @RequestParam(value = "project_id") int projectId,@Validated @RequestParam(value = "score")int score){
-//        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        int userId = 1;
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+//        int userId = 1;
         String message = projectService.selfEvaluation(userId,projectId,score);
         JSONObject result = new JSONObject();
         result.put("message",message);

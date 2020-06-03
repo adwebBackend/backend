@@ -12,4 +12,7 @@ import java.util.List;
 public interface SelectTaskRepository extends CrudRepository<SelectTask,Long> {
     @Query(value = "select * from selectTask where userId=:userId and taskId in(:limited)", nativeQuery = true)
     List<SelectTask> findAllByUserIdAndLimited(@Param("userId") int userId,@Param("limited") List<Integer> limited);
+
+    List<SelectTask> findAllByTaskId(int taskId);
+    SelectTask findByTaskIdAndUserId(int taskId, int userId);
 }
