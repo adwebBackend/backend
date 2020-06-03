@@ -58,75 +58,76 @@ public class ProjectService {
     private EvaluateRepository evaluateRepository;
     @Autowired
     private FileService fileService;
+    @Autowired
+    private TakeRepository takeRepository;
 
 
-    public String createProject(int userId, ProjectRequest request){
-        if (authService.checkAuthor("teacher",userId)){
-            int courseId = request.getCourse_id();
-            String name = request.getName();
-            Date startTime = request.getStart_time();
-            Date endTime = request.getEnd_time();
-            String description = request.getDescription();
-            int teacherProportion = request.getTeacher_proportion();
-            int selfProportion = request.getSelf_proportion();
-            int mutualProportion = request.getMutual_proportion();
-
-            Course course = courseRepository.findByCourseId(courseId);
-            if (course == null){
-                return "course not found";
-            }
-            if (startTime.after(endTime)){
-                return "startTime should be earlier than endTime";
-            }
-            if (teacherProportion + selfProportion + mutualProportion != 100){
-                return "the sum of teacherProportion and selfProportion and mutualProportion should be 100";
-            }
-            Project project = new Project(name,description,startTime,endTime,teacherProportion,selfProportion,mutualProportion);
-            projectRepository.save(project);
-            CpInclusion cpInclusion = new CpInclusion(courseId,project.getProjectId());
-            cpInclusionRepository.save(cpInclusion);
-            return "success";
+    public String createProject(int userId, ProjectRequest request) {
+        if (teachRepository.findByCourseIdAndUserId(request.getCourse_id(), userId) == null) {
+            return "failure";
         }
-        return "failure";
+
+        int courseId = request.getCourse_id();
+        String name = request.getName();
+        Date startTime = request.getStart_time();
+        Date endTime = request.getEnd_time();
+        String description = request.getDescription();
+        int teacherProportion = request.getTeacher_proportion();
+        int selfProportion = request.getSelf_proportion();
+        int mutualProportion = request.getMutual_proportion();
+
+        Course course = courseRepository.findByCourseId(courseId);
+        if (course == null) {
+            return "course not found";
+        }
+        if (startTime.after(endTime)) {
+            return "startTime should be earlier than endTime";
+        }
+        if (teacherProportion + selfProportion + mutualProportion != 100) {
+            return "the sum of teacherProportion and selfProportion and mutualProportion should be 100";
+        }
+        Project project = new Project(name, description, startTime, endTime, teacherProportion, selfProportion, mutualProportion);
+        projectRepository.save(project);
+        CpInclusion cpInclusion = new CpInclusion(courseId, project.getProjectId());
+        cpInclusionRepository.save(cpInclusion);
+        return "success";
     }
 
     @Transactional
-    public String deleteProject(int userId,int projectId){
-        if (authService.checkAuthor("teacher",userId)){
-            CpInclusion cpInclusion = cpInclusionRepository.findByProjectId(projectId);
-            if (cpInclusion == null){
-                return "project not found";
-            }
-            Teach teach = teachRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId);
-            if (teach == null){
-                return "this project is not your course's";
-            }
-            projectRepository.deleteByProjectId(projectId);
-            return "success";
+    public String deleteProject(int userId,int projectId) {
+        CpInclusion cpInclusion = cpInclusionRepository.findByProjectId(projectId);
+        if (cpInclusion == null) {
+            return "project not found";
         }
-        return "failure";
+
+        if (teachRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(), userId) == null) {
+            return "failure";
+        }
+
+        cpInclusionRepository.deleteAllByProjectId(projectId);
+        return "success";
     }
 
-    public JSONObject projectBasicInfo(int userId, int projectId){
+    public JSONObject projectBasicInfo(int userId, int projectId) {
         JSONObject result = new JSONObject();
-
-        User user = userRepository.findByUserId(userId);
-        if (user != null){
-            Project project = projectRepository.findByProjectId(projectId);
-            if (project == null){
-                result.put("message","project not found");
-                return result;
-            }
-            result.put("project_name",project.getProjectName());
-            result.put("introduce",project.getProjectIntroduce());
-            result.put("start_time",project.getProjectStartTime());
-            result.put("end_time",project.getProjectEndTime());
-            result.put("teacher_proportion",project.getTeacherProportion());
-            result.put("self_proportion",project.getSelfProportion());
-            result.put("mutual_proportion",project.getMutualProportion());
+        CpInclusion cpInclusion = cpInclusionRepository.findByProjectId(projectId);
+        if (cpInclusion == null) {
+            result.put("message", "failure");
             return result;
         }
-        result.put("message","failure");
+        if (takeRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(), userId) == null&&teachRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(), userId)==null) {
+            result.put("message", "failure");
+            return result;
+        }
+
+        Project project=projectRepository.findByProjectId(projectId);
+        result.put("project_name", project.getProjectName());
+        result.put("introduce", project.getProjectIntroduce());
+        result.put("start_time", project.getProjectStartTime());
+        result.put("end_time", project.getProjectEndTime());
+        result.put("teacher_proportion", project.getTeacherProportion());
+        result.put("self_proportion", project.getSelfProportion());
+        result.put("mutual_proportion", project.getMutualProportion());
         return result;
     }
 

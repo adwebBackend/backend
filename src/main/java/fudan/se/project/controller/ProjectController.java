@@ -43,42 +43,30 @@ public class ProjectController {
         if (result != null){
             return new ResponseEntity<>(result.toJSONString(), HttpStatus.BAD_REQUEST);
         }
+
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
         String message = projectService.createProject(userId,request);
         JSONObject response = new JSONObject();
         response.put("message",message);
-        if (message.equals("success")){
-            return new ResponseEntity<>(response.toJSONString(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(response.toJSONString(),HttpStatus.BAD_REQUEST);
+        return Tool.getResponseEntity(response);
     }
 
     @GetMapping("/delete_project")
     @ResponseBody
     public ResponseEntity<?> deleteProject(@Validated @RequestParam(value = "project_id") int projectId){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
         String message = projectService.deleteProject(userId,projectId);
         JSONObject response = new JSONObject();
         response.put("message",message);
-        if (message.equals("success")){
-            return new ResponseEntity<>(response.toJSONString(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(response.toJSONString(),HttpStatus.BAD_REQUEST);
-
+        return Tool.getResponseEntity(response);
     }
 
     @GetMapping("/project_basic_info")
     @ResponseBody
     public ResponseEntity<?> projectBasicInfo(@Validated @RequestParam(value = "project_id") int projectId){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
         JSONObject result = projectService.projectBasicInfo(userId,projectId);
-        if (result.getString("message") != null){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/group_members")

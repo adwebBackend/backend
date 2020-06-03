@@ -108,9 +108,6 @@ public class Tool {
     }
 
     public static ResponseEntity<?> getResponseEntity(JSONObject result) throws JSONException {
-        if (result.getInteger("number") != null && result.getInteger("number") == 0){
-            return new ResponseEntity<>(result.toJSONString(), HttpStatus.BAD_REQUEST);
-        }
         if (result.getString("message") != null && !"success".equals(result.getString("message"))){
             return new ResponseEntity<>(result.toJSONString(), HttpStatus.BAD_REQUEST);
         }
