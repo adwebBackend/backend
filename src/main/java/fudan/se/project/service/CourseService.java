@@ -270,9 +270,13 @@ public class CourseService {
                 result.put("message","failure");
                 return result;
             }
-            Take take = new Take(userId,courseId);
-            takeRepository.save(take);
-            result.put("message","success");
+            if (takeRepository.findByCourseIdAndUserId(courseId,userId)==null){
+                Take take = new Take(userId,courseId);
+                takeRepository.save(take);
+                result.put("message","success");
+                return result;
+            }
+            result.put("message","failure");
             return result;
         }
         result.put("message","failure");

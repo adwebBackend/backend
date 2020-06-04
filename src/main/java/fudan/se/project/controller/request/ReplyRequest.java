@@ -10,8 +10,6 @@ public class ReplyRequest {
     @NotNull(message = "content is required")
     private String content;
 
-    @NotNull(message = "replTime is required")
-    private Date reply_time;
 
     public int getPost_id() {
         return post_id;
@@ -29,18 +27,10 @@ public class ReplyRequest {
         this.content = content;
     }
 
-    public Date getReply_time() {
-        return reply_time;
-    }
-
-    public void setReply_time(Date reply_time) {
-        this.reply_time = reply_time;
-    }
 
     public ReplyRequest(@NotNull(message = "postId is required") int post_id, @NotNull(message = "content is required") String content, @NotNull(message = "replTime is required") Date reply_time) {
         this.post_id = post_id;
         this.content = content;
-        this.reply_time = reply_time;
     }
 
     public ReplyRequest() {

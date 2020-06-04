@@ -13,9 +13,6 @@ public class PostRequest {
     @NotNull(message = "content is required")
     private String content;
 
-    @NotNull(message = "post_time is required")
-    private Date post_time;
-
     public int getProject_id() {
         return project_id;
     }
@@ -40,19 +37,10 @@ public class PostRequest {
         this.content = content;
     }
 
-    public Date getPost_time() {
-        return post_time;
-    }
-
-    public void setPost_time(Date post_time) {
-        this.post_time = post_time;
-    }
-
     public PostRequest(@NotNull(message = "projectId is required") int project_id, @NotNull(message = "postName is required") String post_name, @NotNull(message = "content is required") String content, @NotNull(message = "post_time is required") Date post_time) {
         this.project_id = project_id;
         this.post_name = post_name;
         this.content = content;
-        this.post_time = post_time;
     }
 
     public PostRequest() {

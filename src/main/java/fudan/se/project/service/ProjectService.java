@@ -1,5 +1,6 @@
 package fudan.se.project.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import fudan.se.project.controller.request.PostRequest;
@@ -134,65 +135,43 @@ public class ProjectService {
     public JSONObject groupMembers(int userId,int projectId){
         JSONObject result = new JSONObject();
 
-        User user = userRepository.findByUserId(userId);
-        if (user != null){
-            Project project = projectRepository.findByProjectId(projectId);
-            if (project == null){
-                result.put("message","project not found");
-                return result;
-            }
+        CpInclusion cpInclusion=cpInclusionRepository.findByProjectId(projectId);
+        if (cpInclusion!=null&&(teachRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId)!=null||takeRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId)!=null)){
             List<Participate> list = participateRepository.findAllByProjectId(projectId);
-            if (list.size()==0){
-                result.put("message","this project has no member");
-                return result;
-            }
-            List<JSONObject> others = new ArrayList<>();
+            JSONArray others = new JSONArray();
+            JSONObject leader = new JSONObject();
             for (Participate participate:list){
-                User user1 = userRepository.findByUserId(participate.getUserId());
+                User user = userRepository.findByUserId(participate.getUserId());
                 if (participate.getIsGroupLeader() == 1){
-                    JSONObject leader = new JSONObject();
-                    leader.put("student_name",user1.getUsername());
-                    leader.put("student_id",user1.getUserId());
-                    result.put("group_leader",leader);
+                    leader.put("student_name",user.getName());
+                    leader.put("student_id",user.getUserId());
                 }
                 else {
                     JSONObject other = new JSONObject();
-                    other.put("student_name",user1.getUsername());
-                    other.put("student_id",user1.getUserId());
+                    other.put("student_name",user.getName());
+                    other.put("student_id",user.getUserId());
                     others.add(other);
                 }
             }
+            result.put("group_leader",leader);
             result.put("others",others);
             return result;
         }
+
         result.put("message","failure");
         return result;
     }
 
     public JSONObject allTasks(int userId, int projectId){
         JSONObject result = new JSONObject();
-
-        User user = userRepository.findByUserId(userId);
-        if (user != null) {
+        CpInclusion cpInclusion=cpInclusionRepository.findByProjectId(projectId);
+        if (cpInclusion!=null){
             Project project = projectRepository.findByProjectId(projectId);
-            if (project == null){
-                result.put("message","project not found");
-                return result;
-            }
+            Course course=courseRepository.findByCourseId(cpInclusion.getCourseId());
             Participate participate = participateRepository.findByProjectIdAndUserId(projectId, userId);
-            Course course = project.getCourse();
-
-            if (teachRepository.findByCourseIdAndUserId(course.getCourseId(),userId)==null && (participate == null || participate.getIsGroupLeader() == 0)) {
-                result.put("message", "access deny");
-                return result;
-            }
-            if (teachRepository.findByCourseIdAndUserId(course.getCourseId(),userId)!=null || participate.getIsGroupLeader() == 1) {
+            if (teachRepository.findByCourseIdAndUserId(course.getCourseId(),userId)!=null || (participate!=null&&participate.getIsGroupLeader() == 1)) {
                 List<Task> list = project.getTasks();
-                if (list.size() == 0) {
-                    result.put("message", "this project has no task");
-                    return result;
-                }
-                List<JSONObject> tasks = new ArrayList<>();
+                JSONArray tasks = new JSONArray();
                 for (Task task : list) {
                     JSONObject object = new JSONObject();
                     object.put("task_id", task.getTaskId());
@@ -205,6 +184,8 @@ public class ProjectService {
                 result.put("tasks", tasks);
                 return result;
             }
+            result.put("message", "access deny");
+            return result;
         }
         result.put("message","failure");
         return result;
@@ -213,30 +194,24 @@ public class ProjectService {
     public JSONObject myTasks(int userId,int projectId){
         JSONObject result = new JSONObject();
 
-        User user = userRepository.findByUserId(userId);
-        if (user != null) {
+        CpInclusion cpInclusion=cpInclusionRepository.findByProjectId(projectId);
+        if (cpInclusion!=null){
             Project project = projectRepository.findByProjectId(projectId);
-            if (project == null){
-                result.put("message","project not found");
-                return result;
-            }
             Participate participate = participateRepository.findByProjectIdAndUserId(projectId, userId);
 
             if (participate == null) {
                 result.put("message", "access deny");
                 return result;
             }
+
             List<Task> tasks = project.getTasks();
             List<Integer> limited = new ArrayList<>();
             for (Task task : tasks) {
                 limited.add(task.getTaskId());
             }
             List<SelectTask> list = selectTaskRepository.findAllByUserIdAndLimited(userId, limited);
-            if (list.size() == 0) {
-                result.put("message", "you have no task");
-                return result;
-            }
-            List<JSONObject> taskList = new ArrayList<>();
+
+            JSONArray taskList = new JSONArray();
             for (SelectTask selectTask : list) {
                 JSONObject object = new JSONObject();
                 Task task = taskRepository.findByTaskId(selectTask.getTaskId());
@@ -257,25 +232,16 @@ public class ProjectService {
 
     public JSONObject viewPosts(int userId,int projectId,int page){
         JSONObject result = new JSONObject();
-        User user = userRepository.findByUserId(userId);
-        if (user != null){
-            Project project = projectRepository.findByProjectId(projectId);
-            if (project == null){
-                result.put("message","project not found");
-                return result;
-            }
+        CpInclusion cpInclusion=cpInclusionRepository.findByProjectId(projectId);
+        if (cpInclusion!=null&&(teachRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId)!=null||takeRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId)!=null)){
             List<UserPost> list = userPostRepository.findAllByProjectId(projectId);
-            if (list.size()==0){
-                result.put("message","this project has no post");
-                return result;
-            }
             int pagePerNum = 5;
             int total = list.size();
             if((page - 1) * pagePerNum >= total){
                 result.put("message","page not exists");
                 return result;
             }
-            List<JSONObject> posts = new ArrayList<>();
+            JSONArray posts = new JSONArray();
             for (int i = pagePerNum * (page - 1);i < Math.min(pagePerNum * page,total);i ++){
                 JSONObject object = new JSONObject();
                 UserPost userPost = list.get(i);
@@ -298,6 +264,7 @@ public class ProjectService {
                 posts.add(object);
             }
             result.put("posts",posts);
+            result.put("total",total);
             return result;
         }
         result.put("message","failure");
@@ -306,30 +273,28 @@ public class ProjectService {
 
     public JSONObject viewReplies(int userId,int postId){
         JSONObject result = new JSONObject();
-        User user = userRepository.findByUserId(userId);
-        if (user != null) {
-            Post post = postRepository.findByPostId(postId);
-            if (post == null) {
-                result.put("message", "post not found");
+        UserPost userPost=userPostRepository.findByPostId(postId);
+        if (userPost!=null){
+            CpInclusion cpInclusion=cpInclusionRepository.findByProjectId(userPost.getProjectId());
+            Teach teach=teachRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId);
+            Participate participate=participateRepository.findByProjectIdAndUserId(cpInclusion.getProjectId(),userId);
+            if (teach!=null||participate!=null){
+                List<UserReply> list = userReplyRepository.findAllByPostId(postId);
+                JSONArray replies = new JSONArray();
+                for (UserReply userReply:list){
+                    JSONObject object = new JSONObject();
+                    Reply reply = replyRepository.findByReplyId(userReply.getReplyId());
+                    User student = userRepository.findByUserId(userReply.getUserId());
+                    object.put("reply_content",reply.getReplyContent());
+                    object.put("reply_time",reply.getReplyTime());
+                    object.put("student_name",student.getName());
+                    object.put("avatar",student.getAvatar());
+                    replies.add(object);
+                }
+                result.put("replies",replies);
                 return result;
             }
-            List<UserReply> list = userReplyRepository.findAllByPostId(postId);
-            if (list.size()==0){
-                result.put("message","this post has no reply");
-                return result;
-            }
-            List<JSONObject> replies = new ArrayList<>();
-            for (UserReply userReply:list){
-                JSONObject object = new JSONObject();
-                Reply reply = replyRepository.findByReplyId(userReply.getReplyId());
-                User student = userRepository.findByUserId(userReply.getUserId());
-                object.put("reply_content",reply.getReplyContent());
-                object.put("reply_time",reply.getReplyTime());
-                object.put("student_name",student.getName());
-                object.put("avatar",student.getAvatar());
-                replies.add(object);
-            }
-            result.put("replies",replies);
+            result.put("message","failure");
             return result;
         }
         result.put("message","failure");
@@ -337,13 +302,9 @@ public class ProjectService {
     }
 
     public String post(int userId, PostRequest request){
-        User user = userRepository.findByUserId(userId);
-        if (user != null){
-            Project project = projectRepository.findByProjectId(request.getProject_id());
-            if (project == null){
-                return "project not found";
-            }
-            Post post = new Post(request.getPost_name(),request.getContent(),request.getPost_time());
+        CpInclusion cpInclusion=cpInclusionRepository.findByProjectId(request.getProject_id());
+        if (cpInclusion!=null&&(teachRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId)!=null||participateRepository.findByProjectIdAndUserId(request.getProject_id(),userId)!=null)) {
+            Post post = new Post(request.getPost_name(),request.getContent(),new Date());
             postRepository.save(post);
             UserPost userPost = new UserPost(request.getProject_id(),userId,post.getPostId());
             userPostRepository.save(userPost);
@@ -353,40 +314,35 @@ public class ProjectService {
     }
 
     public String reply(int userId, ReplyRequest replyRequest){
-        User user = userRepository.findByUserId(userId);
-        if (user != null){
-            Post post = postRepository.findByPostId(replyRequest.getPost_id());
-            if (post == null){
-                return "post not found";
+        UserPost userPost=userPostRepository.findByPostId(replyRequest.getPost_id());
+        if (userPost!=null){
+            CpInclusion cpInclusion=cpInclusionRepository.findByProjectId(userPost.getProjectId());
+            if (cpInclusion!=null&&(teachRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId)!=null||participateRepository.findByProjectIdAndUserId(userPost.getProjectId(),userId)!=null)) {
+                Reply reply = new Reply(replyRequest.getContent(),new Date());
+                replyRepository.save(reply);
+                UserReply userReply = new UserReply(replyRequest.getPost_id(),userId,reply.getReplyId());
+                userReplyRepository.save(userReply);
+                return "success";
             }
-            Reply reply = new Reply(replyRequest.getContent(),replyRequest.getReply_time());
-            replyRepository.save(reply);
-            UserReply userReply = new UserReply(replyRequest.getPost_id(),userId,reply.getReplyId());
-            userReplyRepository.save(userReply);
-            return "success";
+            return "failure";
         }
         return "failure";
     }
 
     public JSONObject files(int userId,int projectId){
         JSONObject result = new JSONObject();
-        User user = userRepository.findByUserId(userId);
-        if (user != null) {
+        CpInclusion cpInclusion=cpInclusionRepository.findByProjectId(projectId);
+        if (cpInclusion!=null&&(teachRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId)!=null||participateRepository.findByProjectIdAndUserId(projectId,userId)!=null)) {
             List<Upload> list = uploadRepository.findAllByProjectId(projectId);
-            if (list.size()==0){
-                result.put("message","this project has no file");
-                return result;
-            }
-            List<JSONObject> files = new ArrayList<>();
+            JSONArray files = new JSONArray();
             for (Upload upload:list){
                 JSONObject object = new JSONObject();
                 File file = fileRepository.findByFileId(upload.getFileId());
-                User user1 = userRepository.findByUserId(upload.getUserId());
+                User user = userRepository.findByUserId(upload.getUserId());
                 object.put("file_name",file.getFilename());
-                object.put("path",file.getPath());
                 object.put("upload_time",file.getUploadTime());
-                object.put("upload_username",user1.getName());
-                object.put("avatar",user1.getAvatar());
+                object.put("upload_username",user.getName());
+                object.put("avatar",user.getAvatar());
                 files.add(object);
             }
             result.put("files",files);
@@ -397,112 +353,161 @@ public class ProjectService {
     }
 
     public String like(int userId,int postId){
-        User user = userRepository.findByUserId(userId);
-        if (user != null){
-            Post post = postRepository.findByPostId(postId);
-            if (post == null){
-                return "post not found";
+        UserPost userPost=userPostRepository.findByPostId(postId);
+        if (userPost!=null){
+            CpInclusion cpInclusion=cpInclusionRepository.findByProjectId(userPost.getProjectId());
+            Teach teach=teachRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId);
+            Participate participate=participateRepository.findByProjectIdAndUserId(cpInclusion.getProjectId(),userId);
+            if (teach!=null||participate!=null){
+                Post post = postRepository.findByPostId(postId);
+                if (likesRepository.findByUerIdAndPostId(userId,postId)==null){
+                    Likes likes = new Likes(userId,postId);
+                    likesRepository.save(likes);
+                    post.setLikesCount(post.getLikesCount() + 1);
+                    postRepository.save(post);
+                    return "success";
+                }
+                return "failure";
             }
-            Likes likes = new Likes(userId,postId);
-            likesRepository.save(likes);
-            post.setLikesCount(post.getLikesCount() + 1);
-            postRepository.save(post);
-            return "success";
+            return "failure";
         }
         return "failure";
+
     }
 
     public String addProject(int userId,int projectId){
-        if (authService.checkAuthor("student",userId)){
-            Project project = projectRepository.findByProjectId(projectId);
-            if(project == null){
-                return "project not found";
+        CpInclusion cpInclusion=cpInclusionRepository.findByProjectId(projectId);
+        if (cpInclusion!=null&&takeRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId)!=null){
+            if (participateRepository.findByProjectIdAndUserId(projectId,userId)==null){
+                Participate participate = new Participate(userId,projectId);
+                participateRepository.save(participate);
+                return "success";
             }
-
-            Participate participate = new Participate(userId,projectId);
-            participateRepository.save(participate);
-            return "success";
+            return "failure";
         }
         return "failure";
     }
 
-    public String teacherScore(int userId,int projectId ,int studentId,int score){
+    public String teacherScore(int userId,int projectId,int studentId,int score){
         Project project = projectRepository.findByProjectId(projectId);
-        if (project == null){
-            return "param error";
+        if (project == null||project.getStatus()==1){
+            return "failure";
         }
         Course course = project.getCourse();
 
         if (teachRepository.findByCourseIdAndUserId(course.getCourseId(),userId) != null){
             Participate participate = participateRepository.findByProjectIdAndUserId(projectId,studentId);
             if (participate == null || score < 0 || score > 100){
-                return "param error";
+                return "failure";
             }
             Participate newP = new Participate();
             BeanUtils.copyProperties(participate,newP);
             newP.setTeacherGrade(score);
             participateRepository.delete(participate);
             participateRepository.save(newP);
-            Evaluate evaluate = new Evaluate(userId,studentId,projectId);
-            evaluateRepository.save(evaluate);
             return "success";
         }
         return "failure";
     }
 
-    public JSONObject viewScore(int userId,int projectId){
+    public JSONObject viewScore(int userId,int projectId) {
         JSONObject result = new JSONObject();
-        if (authService.checkAuthor("student",userId)){
-            Project project = projectRepository.findByProjectId(projectId);
-            if (project == null){
-                result.put("message","project not found");
-                return result;
-            }
-            Participate participate = participateRepository.findByProjectIdAndUserId(projectId,userId);
-            int grade = (project.getTeacherProportion() * participate.getTeacherGrade() + project.getSelfProportion() * participate.getSelfGrade() + project.getMutualProportion() * participate.getMutualGrade()) / 100;
-            result.put("teacher_grade",participate.getTeacherGrade());
-            result.put("self_grade",participate.getSelfGrade());
-            result.put("mutual_grade",participate.getMutualGrade());
-            result.put("grade",grade);
+        Project project = projectRepository.findByProjectId(projectId);
+        Participate participate = participateRepository.findByProjectIdAndUserId(projectId, userId);
+        if (project == null || project.getStatus() == 0 || participate==null) {
+            result.put("message", "failure");
             return result;
         }
-        result.put("message","failure");
+
+        int grade = (project.getTeacherProportion() * participate.getTeacherGrade() + project.getSelfProportion() * participate.getSelfGrade() + project.getMutualProportion() * participate.getMutualGrade()) / 100;
+        result.put("teacher_grade", participate.getTeacherGrade());
+        result.put("self_grade", participate.getSelfGrade());
+        result.put("mutual_grade", participate.getMutualGrade());
+        result.put("grade", grade);
         return result;
     }
 
-    public String mutualEvaluation(int userId, int projectId, int studentId, int score){
-        if (authService.checkAuthor("student",userId)){
-            Participate participate = participateRepository.findByProjectIdAndUserId(projectId,studentId);
-            if (participate == null || score < 0 || score > 100){
-                return "param error";
-            }
-            Participate newP = new Participate();
-            BeanUtils.copyProperties(participate,newP);
-            newP.setMutualGrade(score);
-            participateRepository.delete(participate);
-            participateRepository.save(newP);
-            Evaluate evaluate = new Evaluate(userId,studentId,projectId);
-            evaluateRepository.save(evaluate);
-            return "success";
+    public String mutualEvaluation(int userId, int projectId, int studentId, int score) {
+        Participate participate = participateRepository.findByProjectIdAndUserId(projectId, studentId);
+        Participate participate1 = participateRepository.findByProjectIdAndUserId(projectId, userId);
+        Project project=projectRepository.findByProjectId(projectId);
+        if (participate == null || participate1 == null || score < 0 || score > 100 || project.getStatus()==1) {
+            return "failure";
         }
-        return "failure";
+        Participate newP = new Participate();
+        BeanUtils.copyProperties(participate, newP);
+
+        Evaluate evaluated=evaluateRepository.findByEvaluatedUserIdAndEvaluateUserIdAndProjectId(studentId,userId,projectId);
+        if (evaluated!=null){
+            return "you have evaluated";
+        }
+
+        int total=0;
+        List<Evaluate> evaluates=evaluateRepository.findAllByEvaluatedUserIdAndProjectId(studentId,projectId);
+        for (Evaluate evaluate:evaluates){
+            total+=evaluate.getScore();
+        }
+
+        newP.setMutualGrade((total+score)/(evaluates.size()+1));
+        participateRepository.delete(participate);
+        participateRepository.save(newP);
+        Evaluate evaluate = new Evaluate(userId, studentId, projectId,score);
+        evaluateRepository.save(evaluate);
+        return "success";
     }
 
-    public String selfEvaluation(int userId, int projectId, int score){
-        if (authService.checkAuthor("student",userId)){
-            Participate participate = participateRepository.findByProjectIdAndUserId(projectId,userId);
-            if (participate == null || score < 0 || score > 100){
-                return "param error";
-            }
-            Participate newP = new Participate();
-            BeanUtils.copyProperties(participate,newP);
-            newP.setSelfGrade(score);
-            participateRepository.delete(participate);
-            participateRepository.save(newP);
-            return "success";
+    public String selfEvaluation(int userId, int projectId, int score) {
+        Participate participate = participateRepository.findByProjectIdAndUserId(projectId, userId);
+        Project project = projectRepository.findByProjectId(projectId);
+        if (participate == null || score < 0 || score > 100 || project.getStatus()==1) {
+            return "failure";
         }
-        return "failure";
+        Participate newP = new Participate();
+        BeanUtils.copyProperties(participate, newP);
+        newP.setSelfGrade(score);
+        participateRepository.delete(participate);
+        participateRepository.save(newP);
+        return "success";
     }
 
+    public String publish_score(int userId, int projectId) {
+        Project project=projectRepository.findByProjectId(projectId);
+        if (project==null||teachRepository.findByCourseIdAndUserId(project.getCourse().getCourseId(),userId)==null){
+            return "failure";
+        }
+        if (project.getStatus()==1) {
+            return "published already";
+        }
+        project.setStatus(1);
+        projectRepository.save(project);
+        return "success";
+    }
 
+    public JSONObject view_all_scores(int userId, int projectId) {
+        JSONObject result = new JSONObject();
+        Project project=projectRepository.findByProjectId(projectId);
+        if (project==null||teachRepository.findByCourseIdAndUserId(project.getCourse().getCourseId(),userId)==null){
+            result.put("message","failure");
+            return result;
+        }
+
+        List<Participate> participateList=participateRepository.findAllByProjectId(projectId);
+        JSONArray scores = new JSONArray();
+        for (Participate participate:participateList){
+            JSONObject object = new JSONObject();
+            User user=userRepository.findByUserId(participate.getUserId());
+            int grade = (project.getTeacherProportion() * participate.getTeacherGrade() + project.getSelfProportion() * participate.getSelfGrade() + project.getMutualProportion() * participate.getMutualGrade()) / 100;
+            object.put("username",user.getName());
+            object.put("user_id",user.getUserId());
+            object.put("avatar",user.getAvatar());
+            object.put("teacher_grade",participate.getTeacherGrade());
+            object.put("self_grade",participate.getSelfGrade());
+            object.put("mutual_grade",participate.getMutualGrade());
+            object.put("grade",grade);
+            scores.add(object);
+        }
+
+        result.put("scores",scores);
+        return result;
+    }
 }

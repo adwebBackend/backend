@@ -40,6 +40,9 @@ public class Project implements Serializable {
     @Column(name = "mutualProportion")
     private int mutualProportion;
 
+    @Column(name = "status")
+    private int status;
+
     @JsonIgnore
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinTable(name="cpInclusion",joinColumns={@JoinColumn(name="projectId")}
@@ -134,6 +137,14 @@ public class Project implements Serializable {
 
     public void setMutualProportion(int mutualProportion) {
         this.mutualProportion = mutualProportion;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public Project(String projectName, String projectIntroduce, Date projectStartTime, Date projectEndTime, int teacherProportion, int selfProportion, int mutualProportion) {

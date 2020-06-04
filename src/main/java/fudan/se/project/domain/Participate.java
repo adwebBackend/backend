@@ -94,6 +94,9 @@ public class Participate implements Serializable {
     public Participate(int userId, int projectId) {
         this.userId = userId;
         this.projectId = projectId;
+        this.teacherGrade=-1;
+        this.mutualGrade=-1;
+        this.selfGrade=-1;
     }
 
     public Participate() {

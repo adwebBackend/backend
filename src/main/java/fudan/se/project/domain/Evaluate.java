@@ -24,6 +24,10 @@ public class Evaluate implements Serializable {
     @Column(name = "projectId")
     private int projectId;
 
+    @Id
+    @Column(name = "score")
+    private int score;
+
     public int getEvaluateUserId() {
         return evaluateUserId;
     }
@@ -48,10 +52,19 @@ public class Evaluate implements Serializable {
         this.projectId = projectId;
     }
 
-    public Evaluate(int evaluateUserId, int evaluatedUserId, int projectId) {
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public Evaluate(int evaluateUserId, int evaluatedUserId, int projectId,int score) {
         this.evaluateUserId = evaluateUserId;
         this.evaluatedUserId = evaluatedUserId;
         this.projectId = projectId;
+        this.score=score;
     }
 
     public Evaluate() {

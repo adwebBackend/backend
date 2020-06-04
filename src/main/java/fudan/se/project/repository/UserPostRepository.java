@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface UserPostRepository extends CrudRepository<UserPost,Long> {
     List<UserPost> findAllByProjectId(int projectId);
+    UserPost findByPostId(int postId);
 }

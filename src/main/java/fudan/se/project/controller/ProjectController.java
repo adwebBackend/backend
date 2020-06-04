@@ -73,63 +73,41 @@ public class ProjectController {
     @ResponseBody
     public ResponseEntity<?> groupMembers(@Validated @RequestParam(value = "project_id") int projectId){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
         JSONObject result = projectService.groupMembers(userId,projectId);
-        if (result.getString("message") != null){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
+        return Tool.getResponseEntity(result);
 
     }
 
     @GetMapping("/all_tasks")
     @ResponseBody
-    public ResponseEntity<?> allTasks(@Validated @RequestParam(value = "project_id") int projectId){
-                int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
-        JSONObject result = projectService.allTasks(userId,projectId);
-        if (result.getString("message") != null){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
+    public ResponseEntity<?> allTasks(@Validated @RequestParam(value = "project_id") int projectId) {
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        JSONObject result = projectService.allTasks(userId, projectId);
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/my_tasks")
     @ResponseBody
-    public ResponseEntity<?> myTasks(@Validated @RequestParam(value = "project_id") int projectId){
-                int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 6;
-        JSONObject result = projectService.myTasks(userId,projectId);
-        if (result.getString("message") != null){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
-
+    public ResponseEntity<?> myTasks(@Validated @RequestParam(value = "project_id") int projectId) {
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        JSONObject result = projectService.myTasks(userId, projectId);
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/view_posts")
     @ResponseBody
     public ResponseEntity<?> viewPosts(@Validated @RequestParam(value = "project_id") int projectId, @Validated @RequestParam(value = "page") int page){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
         JSONObject result = projectService.viewPosts(userId,projectId,page);
-        if (result.getString("message") != null){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
-
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/view_replies")
     @ResponseBody
     public ResponseEntity<?> viewReplies(@Validated @RequestParam(value = "post_id") int postId){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
         JSONObject result = projectService.viewReplies(userId,postId);
-        if (result.getString("message") != null){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
+        return Tool.getResponseEntity(result);
     }
 
     @PostMapping("/post")
@@ -140,14 +118,10 @@ public class ProjectController {
             return new ResponseEntity<>(error.toJSONString(), HttpStatus.BAD_REQUEST);
         }
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
         String message = projectService.post(userId,request);
         JSONObject result = new JSONObject();
         result.put("message",message);
-        if (message.equals("success")){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
+        return Tool.getResponseEntity(result);
     }
 
     @PostMapping("/reply")
@@ -158,95 +132,67 @@ public class ProjectController {
             return new ResponseEntity<>(error.toJSONString(), HttpStatus.BAD_REQUEST);
         }
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
         String message = projectService.reply(userId,replyRequest);
         JSONObject result = new JSONObject();
         result.put("message",message);
-        if (message.equals("success")){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/files")
     @ResponseBody
     public ResponseEntity<?> files(@Validated @RequestParam(value = "project_id") int projectId){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
         JSONObject result = projectService.files(userId,projectId);
-        if (result.getString("files") != null){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/like")
     @ResponseBody
     public ResponseEntity<?> like(@Validated@RequestParam(value = "post_id")int postId){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
         String message = projectService.like(userId,postId);
         JSONObject result = new JSONObject();
         result.put("message",message);
-        if (message.equals("success")){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/add_project")
     @ResponseBody
     public ResponseEntity<?> addProject(@Validated @RequestParam(value = "project_id") int projectId){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 10;
         String message = projectService.addProject(userId, projectId);
         JSONObject result = new JSONObject();
         result.put("message",message);
-        if (message.equals("success")){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
+        return Tool.getResponseEntity(result);
 
     }
 
     @GetMapping("/teacher_score")
     @ResponseBody
     public ResponseEntity<?> teacherScore(@Validated @RequestParam(value = "project_id") int projectId,@Validated @RequestParam(value = "student_id")int studentId,@Validated @RequestParam(value = "score")int score){
-//        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        int userId = 7;
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         String message = projectService.teacherScore(userId,projectId,studentId,score);
         JSONObject result = new JSONObject();
         result.put("message",message);
-        if (message.equals("success")){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/view_score")
     @ResponseBody
     public ResponseEntity<?> viewScore(@Validated @RequestParam(value = "project_id") int projectId){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 1;
         JSONObject result = projectService.viewScore(userId,projectId);
-        if (result.getString("message") != null){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/mutual_evaluation")
     @ResponseBody
     public ResponseEntity<?> mutualEvaluation(@Validated @RequestParam(value = "project_id") int projectId,@Validated @RequestParam(value = "student_id")int studentId,@Validated @RequestParam(value = "score")int score){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 6;
         String message = projectService.mutualEvaluation(userId,projectId,studentId,score);
         JSONObject result = new JSONObject();
         result.put("message",message);
-        if (message.equals("success")){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
+        return Tool.getResponseEntity(result);
     }
 
 
@@ -254,13 +200,27 @@ public class ProjectController {
     @ResponseBody
     public ResponseEntity<?> selfEvaluation(@Validated @RequestParam(value = "project_id") int projectId,@Validated @RequestParam(value = "score")int score){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 1;
         String message = projectService.selfEvaluation(userId,projectId,score);
         JSONObject result = new JSONObject();
         result.put("message",message);
-        if (message.equals("success")){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
+        return Tool.getResponseEntity(result);
+    }
+
+    @GetMapping("/publish_score")
+    @ResponseBody
+    public ResponseEntity<?> publish_score(@Validated @RequestParam(value = "project_id") int projectId){
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        String message = projectService.publish_score(userId,projectId);
+        JSONObject result = new JSONObject();
+        result.put("message",message);
+        return Tool.getResponseEntity(result);
+    }
+
+    @GetMapping("/view_all_scores")
+    @ResponseBody
+    public ResponseEntity<?> view_all_scores(@Validated @RequestParam(value = "project_id") int projectId){
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        JSONObject result = projectService.view_all_scores(userId,projectId);
+        return Tool.getResponseEntity(result);
     }
 }
