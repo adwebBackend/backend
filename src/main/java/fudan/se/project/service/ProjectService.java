@@ -129,6 +129,7 @@ public class ProjectService {
         result.put("teacher_proportion", project.getTeacherProportion());
         result.put("self_proportion", project.getSelfProportion());
         result.put("mutual_proportion", project.getMutualProportion());
+        result.put("status", project.getStatus());
         return result;
     }
 
