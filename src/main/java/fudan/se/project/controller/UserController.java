@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+@SuppressWarnings("Duplicates")
 @RestController
 @Table(name = "user")
 @JsonIgnoreProperties({"handler","hibernateLazyInitializer"})

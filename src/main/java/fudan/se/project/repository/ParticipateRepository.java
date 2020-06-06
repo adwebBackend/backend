@@ -19,4 +19,6 @@ public interface ParticipateRepository extends CrudRepository<Participate,Long> 
     List<Participate> findAllByProjectId(int projectId);
     List<Participate> findAllByUserId(int userId);
     Participate findByProjectIdAndUserId(int projectId,int userId);
+
+    void deleteAllByUserId(int userId);
 }

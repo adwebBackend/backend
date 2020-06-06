@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface UserReplyRepository extends CrudRepository<UserReply,Long> {
     List<UserReply> findAllByPostId(int postId);
+    void deleteAllByUserId(int userId);
 }

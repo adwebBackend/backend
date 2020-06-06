@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LikesRepository extends CrudRepository<Likes,Long> {
     Likes findByUerIdAndPostId(int userId,int postId);
+    void deleteAllByUerId(int userId);
 }

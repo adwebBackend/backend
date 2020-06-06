@@ -10,4 +10,5 @@ import java.util.List;
 public interface UploadRepository extends CrudRepository<Upload,Long> {
     List<Upload> findAllByProjectId(int projectId);
     Upload findByFileIdAndUserId(int fileId,int userId);
+    void deleteAllByUserId(int userId);
 }

@@ -15,4 +15,6 @@ public interface SelectTaskRepository extends CrudRepository<SelectTask,Long> {
 
     List<SelectTask> findAllByTaskId(int taskId);
     SelectTask findByTaskIdAndUserId(int taskId, int userId);
+
+    void deleteAllByUserId(int userId);
 }

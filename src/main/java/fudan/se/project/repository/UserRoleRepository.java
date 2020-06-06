@@ -1,5 +1,6 @@
 package fudan.se.project.repository;
 
+import fudan.se.project.domain.User;
 import fudan.se.project.domain.UserRole;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -10,5 +11,6 @@ import java.util.Map;
 
 @Repository
 public interface UserRoleRepository extends CrudRepository<UserRole, Long> {
+    void deleteAllByUser(User user);
 
 }

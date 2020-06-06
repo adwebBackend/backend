@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface EvaluateRepository extends CrudRepository<Evaluate, Long> {
-    List<Evaluate> findAllByEvaluatedUserIdAndProjectId(int evaluatedUserId,int projectId);
+    List<Evaluate> findAllByEvaluatedUserIdAndProjectId(int evaluatedUserId, int projectId);
     Evaluate findByEvaluatedUserIdAndEvaluateUserIdAndProjectId(int evaluatedUserId,int evaluateUserId,int projectId);
+    void deleteAllByEvaluateUserIdOrEvaluatedUserId(int evaluateUserId,int evaluatedUserId);
 }
