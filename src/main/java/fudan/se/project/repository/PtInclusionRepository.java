@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface PtInclusionRepository extends CrudRepository<PtInclusion,Long> {
     List<PtInclusion> findAllByProjectId(int projectId);
+    PtInclusion findByTaskId(int taskId);
     PtInclusion findByTaskIdAndProjectId(int taskId,int projectId);
 }

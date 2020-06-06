@@ -236,7 +236,6 @@ public class CourseService {
         for (Participate participate : participates) {
             limited.remove(limited.indexOf(participate.getProjectId()));
         }
-        System.out.println(limited.size());
 
         for (Integer limit: limited){
             result.add(projectRepository.findByProjectId(limit));

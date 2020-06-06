@@ -511,4 +511,23 @@ public class ProjectService {
         result.put("scores",scores);
         return result;
     }
+
+    public JSONObject choose_leader(int userId, int student_id, int projectId) {
+        JSONObject result = new JSONObject();
+        Project project=projectRepository.findByProjectId(projectId);
+        Participate participate=participateRepository.findByProjectIdAndUserId(projectId,student_id);
+        if (project==null||teachRepository.findByCourseIdAndUserId(project.getCourse().getCourseId(),userId)==null||participate==null ||participate.getIsGroupLeader()==1){
+            result.put("message","failure");
+            return result;
+        }
+
+        Participate newP = new Participate();
+        BeanUtils.copyProperties(participate, newP);
+        newP.setIsGroupLeader(1);
+        participateRepository.delete(participate);
+        participateRepository.save(newP);
+
+        result.put("message","success");
+        return result;
+    }
 }

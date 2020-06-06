@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fudan.se.project.controller.request.SetTaskRequest;
 import fudan.se.project.service.TaskService;
+import fudan.se.project.tool.Tool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,55 +30,45 @@ public class TaskController {
     @ResponseBody
     public ResponseEntity<?> setTask(@Validated @RequestBody SetTaskRequest request){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
         JSONObject result = new JSONObject();
         String message = taskService.setTask(userId,request);
         result.put("message",message);
-        if (message.equals("success")){
-            return new ResponseEntity<>(result.toJSONString(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(result.toJSONString(), HttpStatus.BAD_REQUEST);
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/task_completion")
     @ResponseBody
-    public ResponseEntity<?> taskCompletion(@Validated @RequestParam(value = "task_id") int taskId, @Validated @RequestParam(value = "project_id") int projectId){
-                int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
-        JSONObject result = taskService.taskCompletion(userId,taskId,projectId);
-        if (result.getString("message") == null){
-            return new ResponseEntity<>(result.toJSONString(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(result.toJSONString(), HttpStatus.BAD_REQUEST);
-
+    public ResponseEntity<?> taskCompletion(@Validated @RequestParam(value = "task_id") int taskId) {
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        JSONObject result = taskService.taskCompletion(userId, taskId);
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/supervise")
     @ResponseBody
-    public ResponseEntity<?> supervise(@Validated @RequestParam(value = "task_id") int taskId,@Validated@RequestParam(value = "student_id")int studentId, @Validated @RequestParam(value = "project_id") int projectId){
-                int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 7;
-        String message = taskService.supervise(userId,taskId,projectId,studentId);
+    public ResponseEntity<?> supervise(@Validated @RequestParam(value = "task_id") int taskId,@Validated@RequestParam(value = "student_id")int studentId) {
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        String message = taskService.supervise(userId, taskId, studentId);
         JSONObject result = new JSONObject();
-        result.put("message",message);
-        if (message.equals("success")){
-            return new ResponseEntity<>(result.toJSONString(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(result.toJSONString(), HttpStatus.BAD_REQUEST);
-
+        result.put("message", message);
+        return Tool.getResponseEntity(result);
     }
 
     @GetMapping("/complete_task")
     @ResponseBody
-    public ResponseEntity<?> completeTask(@Validated @RequestParam(value = "task_id")int taskId){
-                int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 1;
-        String message = taskService.completeTask(userId,taskId);
+    public ResponseEntity<?> completeTask(@Validated @RequestParam(value = "task_id")int taskId) {
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        String message = taskService.completeTask(userId, taskId);
         JSONObject result = new JSONObject();
-        result.put("message",message);
-        if (message.equals("success")){
-            return new ResponseEntity<>(result.toJSONString(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(result.toJSONString(), HttpStatus.BAD_REQUEST);
+        result.put("message", message);
+        return Tool.getResponseEntity(result);
+    }
+
+    @GetMapping("/messages")
+    @ResponseBody
+    public ResponseEntity<?> messages() {
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        JSONObject result = taskService.messages(userId);
+        return Tool.getResponseEntity(result);
     }
 }

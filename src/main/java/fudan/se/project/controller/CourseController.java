@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fudan.se.project.domain.Course;
+import fudan.se.project.domain.Participate;
 import fudan.se.project.domain.Project;
 import fudan.se.project.domain.User;
+import fudan.se.project.repository.ParticipateRepository;
 import fudan.se.project.service.CourseService;
 import fudan.se.project.service.FileService;
 import fudan.se.project.tool.Tool;
@@ -32,6 +34,9 @@ public class CourseController {
     private CourseService courseService;
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private ParticipateRepository participateRepository;
 
     @CrossOrigin(origins = "*")
     @PostMapping("/create_course")
@@ -131,12 +136,14 @@ public class CourseController {
         JSONObject result = new JSONObject();
         JSONArray projectArray = new JSONArray();
         for (Project project:projects){
+            Participate participate=participateRepository.findByProjectIdAndUserId(project.getProjectId(),userId);
             JSONObject projectJSON = new JSONObject();
             projectJSON.put("project_id",project.getProjectId());
             projectJSON.put("name",project.getProjectName());
             projectJSON.put("introduce",project.getProjectIntroduce());
             projectJSON.put("start_time",project.getProjectStartTime());
             projectJSON.put("end_time",project.getProjectEndTime());
+            projectJSON.put("is_leader",participate.getIsGroupLeader());
             projectArray.add(projectJSON);
         }
         result.put("projects",projectArray);

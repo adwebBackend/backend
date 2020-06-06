@@ -223,4 +223,12 @@ public class ProjectController {
         JSONObject result = projectService.view_all_scores(userId,projectId);
         return Tool.getResponseEntity(result);
     }
+
+    @GetMapping("/choose_leader")
+    @ResponseBody
+    public ResponseEntity<?> choose_leader(@Validated @RequestParam(value = "student_id") int student_id, @Validated @RequestParam(value = "project_id") int projectId){
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        JSONObject result = projectService.choose_leader(userId,student_id,projectId);
+        return Tool.getResponseEntity(result);
+    }
 }

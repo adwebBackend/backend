@@ -1,6 +1,8 @@
 package fudan.se.project.controller.request;
 
 import javax.validation.constraints.Future;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +27,8 @@ public class SetTaskRequest {
     private String introduce;
 
     @NotNull(message = "importance is required")
+    @Max(5)
+    @Min(1)
     private int importance;
 
     @NotNull(message = "assign is required")

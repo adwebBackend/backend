@@ -28,8 +28,7 @@ public class FileController {
     @PostMapping("/upload_file")
     @ResponseBody
     public ResponseEntity<?> uploadFile(@Validated @RequestParam(value = "file") MultipartFile file, @Validated @RequestParam(value = "project_id") int projectId){
-//        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        int userId = 10;
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         JSONObject message = new JSONObject();
         if (file.isEmpty() || !file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1).equals("pdf")){
             message.put("message","A PDF file is required");
@@ -55,8 +54,7 @@ public class FileController {
     @ResponseBody
     public ResponseEntity<?> deleteFile(@Validated @RequestParam(value = "file_id")int fileId){
         JSONObject message = new JSONObject();
-//        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        int userId = 10;
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         String result = fileService.deleteFile(userId,fileId);
         message.put("message",result);
         if (result.equals("success")){
@@ -69,8 +67,7 @@ public class FileController {
     @GetMapping("/download_file")
     @ResponseBody
     public void downloadFile(HttpServletResponse response, @Validated @RequestParam(value = "file_id")int fileId){
-        //        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        int userId = 10;
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         fileService.downloadFile(response,userId,fileId);
     }
 }

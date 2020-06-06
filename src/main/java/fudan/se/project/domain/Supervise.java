@@ -24,6 +24,9 @@ public class Supervise implements Serializable {
     @Column(name = "taskId")
     private int taskId;
 
+    @Column(name = "isRead")
+    private int isRead;
+
     public int getSuperviseUserId() {
         return superviseUserId;
     }
@@ -46,6 +49,14 @@ public class Supervise implements Serializable {
 
     public void setTaskId(int taskId) {
         this.taskId = taskId;
+    }
+
+    public int getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(int isRead) {
+        this.isRead = isRead;
     }
 
     public Supervise(int superviseUserId, int supervisedUserId, int taskId) {
