@@ -340,9 +340,11 @@ public class ProjectService {
                 JSONObject object = new JSONObject();
                 File file = fileRepository.findByFileId(upload.getFileId());
                 User user = userRepository.findByUserId(upload.getUserId());
+                object.put("file_id",file.getFileId());
                 object.put("file_name",file.getFilename());
                 object.put("upload_time",file.getUploadTime());
                 object.put("upload_username",user.getName());
+                object.put("upload_userId",user.getUserId());
                 object.put("avatar",user.getAvatar());
                 files.add(object);
             }
@@ -353,6 +355,7 @@ public class ProjectService {
         return result;
     }
 
+    @Transactional
     public String like(int userId,int postId){
         UserPost userPost=userPostRepository.findByPostId(postId);
         if (userPost!=null){
@@ -368,7 +371,13 @@ public class ProjectService {
                     postRepository.save(post);
                     return "success";
                 }
-                return "failure";
+                else {
+                    Likes likes = likesRepository.findByUerIdAndPostId(userId,postId);
+                    likesRepository.delete(likes);
+                    post.setLikesCount(post.getLikesCount() - 1);
+                    postRepository.save(post);
+                    return "likes canceled";
+                }
             }
             return "failure";
         }

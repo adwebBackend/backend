@@ -153,7 +153,10 @@ public class ProjectController {
         String message = projectService.like(userId,postId);
         JSONObject result = new JSONObject();
         result.put("message",message);
-        return Tool.getResponseEntity(result);
+        if (message.equals("failure")){
+            return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
     }
 
     @GetMapping("/add_project")
