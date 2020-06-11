@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -146,23 +147,24 @@ public class TaskService {
         List<Supervise> supervises=superviseRepository.findBySupervisedUserId(userId);
         JSONArray array=new JSONArray();
         for (Supervise supervise:supervises){
-            if (supervise.getIsRead()==0) {
-                JSONObject object = new JSONObject();
-                User superviseUser = userRepository.findByUserId(supervise.getSuperviseUserId());
-                Task task=taskRepository.findByTaskId(supervise.getTaskId());
-                Project project=projectRepository.findByProjectId(task.getProject().getProjectId());
-                Course course=courseRepository.findByCourseId(project.getCourse().getCourseId());
-                object.put("superviseUserId", superviseUser.getUserId());
-                object.put("superviseUserName", superviseUser.getName());
-                object.put("superviseUserAvatar", superviseUser.getAvatar());
-                object.put("taskName", task.getTaskName());
-                object.put("taskIntroduce", task.getTaskIntroduce());
-                object.put("projectName", project.getProjectName());
-                object.put("projectIntroduce", project.getProjectIntroduce());
-                object.put("courseName", course.getCourseName());
-                object.put("courseIntroduce", course.getCourseIntroduce());
-                array.add(object);
 
+            JSONObject object = new JSONObject();
+            User superviseUser = userRepository.findByUserId(supervise.getSuperviseUserId());
+            Task task=taskRepository.findByTaskId(supervise.getTaskId());
+            Project project=projectRepository.findByProjectId(task.getProject().getProjectId());
+            Course course=courseRepository.findByCourseId(project.getCourse().getCourseId());
+            object.put("superviseUserId", superviseUser.getUserId());
+            object.put("superviseUserName", superviseUser.getName());
+            object.put("superviseUserAvatar", superviseUser.getAvatar());
+            object.put("isRead",supervise.getIsRead());
+            object.put("taskName", task.getTaskName());
+            object.put("taskIntroduce", task.getTaskIntroduce());
+            object.put("projectName", project.getProjectName());
+            object.put("projectIntroduce", project.getProjectIntroduce());
+            object.put("courseName", course.getCourseName());
+            object.put("courseIntroduce", course.getCourseIntroduce());
+            array.add(object);
+            if (supervise.getIsRead()==0) {
                 Supervise newS = new Supervise();
                 BeanUtils.copyProperties(supervise, newS);
                 newS.setIsRead(1);
@@ -173,4 +175,15 @@ public class TaskService {
         result.put("supervises",array);
         return result;
     }
+
+    @Transactional
+    public String deleteMessage(int userId,int taskId,int superviseUserId){
+        Supervise supervise = superviseRepository.findBySupervisedUserIdAndSuperviseUserIdAndTaskId(userId,superviseUserId,taskId);
+        if (supervise != null){
+            superviseRepository.delete(supervise);
+            return "success";
+        }
+        return "failure";
+    }
+
 }

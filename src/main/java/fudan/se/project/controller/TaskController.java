@@ -71,4 +71,14 @@ public class TaskController {
         JSONObject result = taskService.messages(userId);
         return Tool.getResponseEntity(result);
     }
+
+    @GetMapping("/delete_message")
+    @ResponseBody
+    public ResponseEntity<?> deleteMessage(@Validated @RequestParam(value = "task_id")int taskId, @Validated @RequestParam(value = "superviseUserId")int superviseUserId){
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        String message = taskService.deleteMessage(userId,taskId,superviseUserId);
+        JSONObject result = new JSONObject();
+        result.put("message", message);
+        return Tool.getResponseEntity(result);
+    }
 }
