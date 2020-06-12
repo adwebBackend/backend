@@ -157,7 +157,7 @@ public class TaskService {
             Course course=courseRepository.findByCourseId(project.getCourse().getCourseId());
             object.put("superviseUserId", superviseUser.getUserId());
             object.put("superviseUserName", superviseUser.getName());
-
+            object.put("taskId",task.getTaskId());
             object.put("isRead",supervise.getIsRead());
             object.put("taskName", task.getTaskName());
             object.put("courseName", course.getCourseName());
