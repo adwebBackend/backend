@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity                     //实体类的注解，必须注明
 @Table(name = "supervise")      //指定对应的数据库表
@@ -26,6 +27,9 @@ public class Supervise implements Serializable {
 
     @Column(name = "isRead")
     private int isRead;
+
+    @Column(name = "superviseTime")
+    private Date superviseTime;
 
     public int getSuperviseUserId() {
         return superviseUserId;
@@ -59,10 +63,19 @@ public class Supervise implements Serializable {
         this.isRead = isRead;
     }
 
-    public Supervise(int superviseUserId, int supervisedUserId, int taskId) {
+    public Date getSuperviseTime() {
+        return superviseTime;
+    }
+
+    public void setSuperviseTime(Date superviseTime) {
+        this.superviseTime = superviseTime;
+    }
+
+    public Supervise(int superviseUserId, int supervisedUserId, int taskId, Date superviseTime) {
         this.superviseUserId = superviseUserId;
         this.supervisedUserId = supervisedUserId;
         this.taskId = taskId;
+        this.superviseTime = superviseTime;
     }
 
     public Supervise() {

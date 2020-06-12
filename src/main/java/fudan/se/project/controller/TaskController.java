@@ -81,4 +81,12 @@ public class TaskController {
         result.put("message", message);
         return Tool.getResponseEntity(result);
     }
+
+    @GetMapping("/read_message")
+    @ResponseBody
+    public ResponseEntity<?> readMessage(@Validated @RequestParam(value = "task_id")int taskId, @Validated @RequestParam(value = "superviseUserId")int superviseUserId){
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        JSONObject result = taskService.readMessage(userId,taskId,superviseUserId);
+        return Tool.getResponseEntity(result);
+    }
 }

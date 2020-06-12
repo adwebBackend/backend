@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings("Duplicates")
 @Service
 public class TaskService {
     @Autowired
@@ -116,7 +117,8 @@ public class TaskService {
 
         Supervise supervise=superviseRepository.findBySupervisedUserIdAndSuperviseUserIdAndTaskId(studentId,userId,taskId);
         if (supervise==null){
-            supervise = new Supervise(userId, studentId, taskId);
+            Date date = new Date();
+            supervise = new Supervise(userId, studentId, taskId,date);
             superviseRepository.save(supervise);
         }else {
             Supervise newS = new Supervise();
@@ -155,22 +157,24 @@ public class TaskService {
             Course course=courseRepository.findByCourseId(project.getCourse().getCourseId());
             object.put("superviseUserId", superviseUser.getUserId());
             object.put("superviseUserName", superviseUser.getName());
-            object.put("superviseUserAvatar", superviseUser.getAvatar());
+
             object.put("isRead",supervise.getIsRead());
             object.put("taskName", task.getTaskName());
-            object.put("taskIntroduce", task.getTaskIntroduce());
-            object.put("projectName", project.getProjectName());
-            object.put("projectIntroduce", project.getProjectIntroduce());
             object.put("courseName", course.getCourseName());
-            object.put("courseIntroduce", course.getCourseIntroduce());
+            object.put("time",supervise.getSuperviseTime());
+            object.put("projectName", project.getProjectName());
+//            object.put("taskIntroduce", task.getTaskIntroduce());
+//            object.put("superviseUserAvatar", superviseUser.getAvatar());
+//            object.put("projectIntroduce", project.getProjectIntroduce());
+//            object.put("courseIntroduce", course.getCourseIntroduce());
             array.add(object);
-            if (supervise.getIsRead()==0) {
-                Supervise newS = new Supervise();
-                BeanUtils.copyProperties(supervise, newS);
-                newS.setIsRead(1);
-                superviseRepository.delete(supervise);
-                superviseRepository.save(newS);
-            }
+//            if (supervise.getIsRead()==0) {
+//                Supervise newS = new Supervise();
+//                BeanUtils.copyProperties(supervise, newS);
+//                newS.setIsRead(1);
+//                superviseRepository.delete(supervise);
+//                superviseRepository.save(newS);
+//            }
         }
         result.put("supervises",array);
         return result;
@@ -186,4 +190,30 @@ public class TaskService {
         return "failure";
     }
 
+    @Transactional
+    public JSONObject readMessage(int userId,int taskId,int superviseUserId){
+        Supervise supervise = superviseRepository.findBySupervisedUserIdAndSuperviseUserIdAndTaskId(userId,superviseUserId,taskId);
+        JSONObject object = new JSONObject();
+        if (supervise != null){
+            if (supervise.getIsRead()==0) {
+                Supervise newS = new Supervise();
+                BeanUtils.copyProperties(supervise, newS);
+                newS.setIsRead(1);
+                superviseRepository.delete(supervise);
+                superviseRepository.save(newS);
+            }
+            User superviseUser = userRepository.findByUserId(supervise.getSuperviseUserId());
+            Task task=taskRepository.findByTaskId(supervise.getTaskId());
+            Project project=projectRepository.findByProjectId(task.getProject().getProjectId());
+            Course course=courseRepository.findByCourseId(project.getCourse().getCourseId());
+            object.put("superviseUserName", superviseUser.getName());
+            object.put("taskName", task.getTaskName());
+            object.put("projectName", project.getProjectName());
+            object.put("courseName", course.getCourseName());
+            object.put("time",supervise.getSuperviseTime());
+            return object;
+        }
+        object.put("message","failure");
+        return object;
+    }
 }
