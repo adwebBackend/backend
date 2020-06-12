@@ -92,7 +92,13 @@ public class ManagerController {
     @ResponseBody
     public ResponseEntity<?> viewUser(@Validated @RequestParam(value = "id") int id){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 15;
         return Tool.getResponseEntity(managerService.viewUser(userId,id));
+    }
+
+    @GetMapping("/all_users")
+    @ResponseBody
+    public ResponseEntity<?> allUsers(){
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        return Tool.getResponseEntity(managerService.allUsers(userId));
     }
 }
