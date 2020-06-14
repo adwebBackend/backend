@@ -94,6 +94,16 @@ public class ProjectController {
         return Tool.getResponseEntity(result);
     }
 
+    @GetMapping("/see_task")
+    @ResponseBody
+    public ResponseEntity<?> seeTask(@Validated @RequestParam(value = "task_id") int taskId) {
+//        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        int userId = 1;
+        JSONObject result = projectService.seeTask(userId, taskId);
+        return Tool.getResponseEntity(result);
+    }
+
+
     @GetMapping("/view_posts")
     @ResponseBody
     public ResponseEntity<?> viewPosts(@Validated @RequestParam(value = "project_id") int projectId, @Validated @RequestParam(value = "page") int page){

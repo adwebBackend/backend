@@ -2,6 +2,7 @@ package fudan.se.project.service;
 
 import com.alibaba.fastjson.JSONObject;
 import fudan.se.project.controller.request.AddUserRequest;
+import fudan.se.project.controller.request.ModifyUserRequest;
 import fudan.se.project.domain.Role;
 import fudan.se.project.domain.User;
 import fudan.se.project.domain.UserRole;
@@ -80,19 +81,35 @@ public class ManagerService {
         return "failure";
     }
 
-    public String modifyUser(int userId, int id, String avatarPath, JSONObject params){
+//    public String modifyUser(int userId, int id, String avatarPath, JSONObject params){
+//        if (authService.checkAuthor("admin",userId)){
+//            User user = userRepository.findByUserId(id);
+//            if (user == null){
+//                return "user not found";
+//            }
+//            user.setAvatar(avatarPath);
+//            user.setEmail(params.getString("email"));
+//            user.setName(params.getString("name"));
+//            user.setGender(params.getInteger("gender"));
+//            user.setNickName(params.getString("nickname"));
+//            user.setSignature(params.getString("signature"));
+//            user.setBirthday(params.getDate("birthday"));
+//            userRepository.save(user);
+//            return "success";
+//        }
+//        return "failure";
+//    }
+    public String modifyUser(int userId, ModifyUserRequest request){
         if (authService.checkAuthor("admin",userId)){
-            User user = userRepository.findByUserId(id);
+            User user = userRepository.findByUserId(request.getId());
             if (user == null){
                 return "user not found";
             }
-            user.setAvatar(avatarPath);
-            user.setEmail(params.getString("email"));
-            user.setName(params.getString("name"));
-            user.setGender(params.getInteger("gender"));
-            user.setNickName(params.getString("nickname"));
-            user.setSignature(params.getString("signature"));
-            user.setBirthday(params.getDate("birthday"));
+            user.setName(request.getName());
+            user.setGender(request.getGender());
+            user.setNickName(request.getNickname());
+            user.setSignature(request.getSignature());
+            user.setBirthday(request.getBirthday());
             userRepository.save(user);
             return "success";
         }

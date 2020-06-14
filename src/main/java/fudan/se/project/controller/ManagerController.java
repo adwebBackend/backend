@@ -2,6 +2,7 @@ package fudan.se.project.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import fudan.se.project.controller.request.AddUserRequest;
+import fudan.se.project.controller.request.ModifyUserRequest;
 import fudan.se.project.service.FileService;
 import fudan.se.project.service.ManagerService;
 import fudan.se.project.tool.Tool;
@@ -57,33 +58,44 @@ public class ManagerController {
 
     @PostMapping("/modify_user")
     @ResponseBody
-    public ResponseEntity<?> modifyUser(@Validated @RequestParam("id") int id,@Validated @RequestParam(value = "avatar") MultipartFile avatar,@Validated @RequestParam("params") String params) throws IOException {
-        JSONObject json= JSONObject.parseObject(params);
-        String regex = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
-        if (json.getString("email")==null ||json.getString("nickname")==null ||json.getString("name")==null ||json.getInteger("gender")==null ||json.getString("signature")==null || json.getDate("birthday")==null || json.getDate("birthday").after(new Date()) || json.getString("email").matches(regex)){
-            return Tool.getErrorJson("parameter error");
+//    public ResponseEntity<?> modifyUser(@Validated @RequestParam("id") int id,@Validated @RequestParam(value = "avatar") MultipartFile avatar,@Validated @RequestParam("params") String params) throws IOException {
+//        JSONObject json= JSONObject.parseObject(params);
+//        String regex = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+//        if (json.getString("email")==null ||json.getString("nickname")==null ||json.getString("name")==null ||json.getInteger("gender")==null ||json.getString("signature")==null || json.getDate("birthday")==null || json.getDate("birthday").after(new Date()) || json.getString("email").matches(regex)){
+//            return Tool.getErrorJson("parameter error");
+//        }
+//        JSONObject message = new JSONObject();
+//        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+////        int userId = 15;
+//        //检查是否是图片
+//        BufferedImage bi = ImageIO.read(avatar.getInputStream());
+//        if (bi == null){
+//            message.put("message","An image is required");
+//            return new ResponseEntity<>(message.toJSONString(),HttpStatus.BAD_REQUEST);
+//        }
+//        //检查图片大小
+//        float size = Float.parseFloat(String.valueOf(avatar.getSize())) / 1024;
+//        BigDecimal b = new BigDecimal(size);
+//        // 2表示2位 ROUND_HALF_UP表明四舍五入，
+//        size = b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
+//        if (size > 200){
+//            message.put("message","Image is too large");
+//            return new ResponseEntity<>(message.toJSONString(),HttpStatus.BAD_REQUEST);
+//        }
+//
+//        String path = fileService.saveFile(avatar);
+//        String result = managerService.modifyUser(userId,id,path,json);
+//        message.put("message",result);
+//        return Tool.getResponseEntity(message);
+//    }
+    public ResponseEntity<?> modifyUser(@Validated @RequestBody ModifyUserRequest request,BindingResult bindingResult){
+        JSONObject error = Tool.DealParamError(bindingResult);
+        if (error != null){
+            return new ResponseEntity<>(error.toJSONString(), HttpStatus.BAD_REQUEST);
         }
-        JSONObject message = new JSONObject();
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 15;
-        //检查是否是图片
-        BufferedImage bi = ImageIO.read(avatar.getInputStream());
-        if (bi == null){
-            message.put("message","An image is required");
-            return new ResponseEntity<>(message.toJSONString(),HttpStatus.BAD_REQUEST);
-        }
-        //检查图片大小
-        float size = Float.parseFloat(String.valueOf(avatar.getSize())) / 1024;
-        BigDecimal b = new BigDecimal(size);
-        // 2表示2位 ROUND_HALF_UP表明四舍五入，
-        size = b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-        if (size > 200){
-            message.put("message","Image is too large");
-            return new ResponseEntity<>(message.toJSONString(),HttpStatus.BAD_REQUEST);
-        }
-
-        String path = fileService.saveFile(avatar);
-        String result = managerService.modifyUser(userId,id,path,json);
+        JSONObject message = new JSONObject();
+        String result = managerService.modifyUser(userId,request);
         message.put("message",result);
         return Tool.getResponseEntity(message);
     }
@@ -91,8 +103,8 @@ public class ManagerController {
     @GetMapping("/view_user")
     @ResponseBody
     public ResponseEntity<?> viewUser(@Validated @RequestParam(value = "id") int id){
-        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 15;
+//        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        int userId = 15;
         return Tool.getResponseEntity(managerService.viewUser(userId,id));
     }
 }

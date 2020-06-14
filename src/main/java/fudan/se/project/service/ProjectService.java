@@ -231,6 +231,22 @@ public class ProjectService {
         return result;
     }
 
+    public JSONObject seeTask(int userId,int taskId){
+        JSONObject result = new JSONObject();
+        SelectTask selectTask = selectTaskRepository.findByTaskIdAndUserId(taskId,userId);
+        if (selectTask == null){
+            result.put("message", "failure");
+            return result;
+        }
+        Task task = taskRepository.findByTaskId(taskId);
+        result.put("task_name", task.getTaskName());
+        result.put("start_time", task.getTaskStartTime());
+        result.put("end_time", task.getTaskEndTime());
+        result.put("importance", task.getImportance());
+        result.put("is_accomplished", selectTask.getIsAccomplished());
+        return result;
+    }
+
     public JSONObject viewPosts(int userId,int projectId,int page){
         JSONObject result = new JSONObject();
         CpInclusion cpInclusion=cpInclusionRepository.findByProjectId(projectId);
