@@ -3,6 +3,7 @@ package fudan.se.project.controller;
 import com.alibaba.fastjson.JSONObject;
 import fudan.se.project.controller.request.AddUserRequest;
 import fudan.se.project.controller.request.ModifyUserRequest;
+import fudan.se.project.domain.User;
 import fudan.se.project.service.FileService;
 import fudan.se.project.service.ManagerService;
 import fudan.se.project.tool.Tool;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import javax.validation.constraints.Max;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @SuppressWarnings("Duplicates")
 @RestController
@@ -110,6 +113,13 @@ public class ManagerController {
     @ResponseBody
     public ResponseEntity<?> allUsers(){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        return Tool.getResponseEntity(managerService.allUsers(userId));
+//        int userId = 15;
+        List<JSONObject> objects = managerService.allUsers(userId);
+        if (objects == null){
+            return Tool.getErrorJson("failure");
+        }
+        JSONObject result = new JSONObject();
+        result.put("users",objects);
+        return Tool.getResponseEntity(result);
     }
 }

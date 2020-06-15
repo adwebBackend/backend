@@ -48,6 +48,10 @@ public class ManagerService {
 
     public String addUser(int userId, AddUserRequest request){
         if (authService.checkAuthor("admin",userId)){
+            User existUser = userRepository.findByEmail(request.getEmail());
+            if (existUser != null){
+                return "existed account";
+            }
             String password = DigestUtils.md5DigestAsHex(((CharSequence) request.getPassword()).toString().getBytes());
             User user = new User(request.getEmail(),password);
             userRepository.save(user);
@@ -139,24 +143,21 @@ public class ManagerService {
         return result;
     }
 
-    public JSONObject allUsers(int userId){
-        JSONObject result = new JSONObject();
+    public List<JSONObject> allUsers(int userId){
+
         List<JSONObject> objects = new ArrayList<>();
         if (authService.checkAuthor("admin",userId)){
             List<User> users = (List<User>) userRepository.findAll();
             for (User user:users){
+                JSONObject result = new JSONObject();
                 result.put("name",user.getName());
                 result.put("email",user.getEmail());
                 result.put("gender",user.getGender());
                 result.put("nickname",user.getNickName());
                 result.put("userId",user.getUserId());
-
                 objects.add(result);
             }
-            result.put("users",objects);
-            return result;
         }
-        result.put("message","failure");
-        return result;
+        return objects;
     }
 }
