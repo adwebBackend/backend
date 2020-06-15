@@ -38,7 +38,6 @@ public class ManagerController {
             return new ResponseEntity<>(error.toJSONString(), HttpStatus.BAD_REQUEST);
         }
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 15;
         String message = managerService.addUser(userId,request);
         JSONObject result = new JSONObject();
         result.put("message",message);
@@ -49,7 +48,7 @@ public class ManagerController {
     @ResponseBody
     public ResponseEntity<?> deleteUser(@Validated @RequestParam(value = "id") int id){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-//        int userId = 15;
+
         String message = managerService.deleteUser(userId,id);
         JSONObject result = new JSONObject();
         result.put("message",message);
@@ -103,8 +102,14 @@ public class ManagerController {
     @GetMapping("/view_user")
     @ResponseBody
     public ResponseEntity<?> viewUser(@Validated @RequestParam(value = "id") int id){
-//        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        int userId = 15;
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         return Tool.getResponseEntity(managerService.viewUser(userId,id));
+    }
+
+    @GetMapping("/all_users")
+    @ResponseBody
+    public ResponseEntity<?> allUsers(){
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+        return Tool.getResponseEntity(managerService.allUsers(userId));
     }
 }

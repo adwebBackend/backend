@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ManagerService {
@@ -131,6 +133,27 @@ public class ManagerService {
             result.put("nickname",user.getNickName());
             result.put("signature",user.getSignature());
             result.put("avatar",user.getAvatar());
+            return result;
+        }
+        result.put("message","failure");
+        return result;
+    }
+
+    public JSONObject allUsers(int userId){
+        JSONObject result = new JSONObject();
+        List<JSONObject> objects = new ArrayList<>();
+        if (authService.checkAuthor("admin",userId)){
+            List<User> users = (List<User>) userRepository.findAll();
+            for (User user:users){
+                result.put("name",user.getName());
+                result.put("email",user.getEmail());
+                result.put("gender",user.getGender());
+                result.put("nickname",user.getNickName());
+                result.put("userId",user.getUserId());
+
+                objects.add(result);
+            }
+            result.put("users",objects);
             return result;
         }
         result.put("message","failure");

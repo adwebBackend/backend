@@ -14,7 +14,7 @@ public interface ParticipateRepository extends CrudRepository<Participate,Long> 
     @Query(value = "select * from participate where userId =:userId and projectId in(:limited)", nativeQuery = true)
     List<Participate> findParticipateByUserIdAndLimited(@Param("userId") int userId, @Param("limited") List<Integer> limited);
 
-    @Query(value = "select * from project where userId =:userId and projectId not in(:limited)", nativeQuery = true)
+    @Query(value = "select * from participate where userId =:userId and projectId not in(:limited)", nativeQuery = true)
     List<Participate> findParticipateByUserIdAndNotLimited(@Param("userId") int userId,@Param("limited") List<Integer> limited);
     List<Participate> findAllByProjectId(int projectId);
     List<Participate> findAllByUserId(int userId);
