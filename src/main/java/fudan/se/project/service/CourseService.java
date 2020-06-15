@@ -270,7 +270,7 @@ public class CourseService {
         JSONObject result = new JSONObject();
         if (authService.checkAuthor("student",userId)){
             Course course = courseRepository.findByCourseId(courseId);
-            if (course == null){
+            if (course == null||course.getCourseEndTime().getTime()<=new Date().getTime()){
                 result.put("message","failure");
                 return result;
             }
