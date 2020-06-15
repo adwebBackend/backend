@@ -282,7 +282,11 @@ public class ProjectService {
                 }
                 posts.add(object);
             }
-            result.put("posts",posts);
+            JSONArray postsReverse = new JSONArray();
+            for (int i=posts.size()-1;i>=0;i++){
+                postsReverse.set(posts.size()-i-1,posts.get(i));
+            }
+            result.put("posts",postsReverse);
             result.put("total",total);
             return result;
         }
@@ -310,7 +314,11 @@ public class ProjectService {
                     object.put("avatar",student.getAvatar());
                     replies.add(object);
                 }
-                result.put("replies",replies);
+                JSONArray repliesReverse = new JSONArray();
+                for (int i=replies.size()-1;i>=0;i++){
+                    repliesReverse.set(replies.size()-i-1,replies.get(i));
+                }
+                result.put("replies",repliesReverse);
                 return result;
             }
             result.put("message","failure");
