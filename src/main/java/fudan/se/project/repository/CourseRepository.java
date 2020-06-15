@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface CourseRepository extends CrudRepository<Course,Integer> {
     Course findByCourseId(int courseId);
-
+    List<Course> findAll();
     @Query(value = "select * from course where courseId not in(:limited)", nativeQuery = true)
     List<Course> findCourseByLimited(@Param("limited")List<Integer> limited);
 

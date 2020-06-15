@@ -130,10 +130,15 @@ public class CourseService {
         if (authService.checkAuthor("student",userId)){
             List<Take> takes = takeRepository.findAllByUserId(userId);
             List<Integer> limited = new ArrayList<>();
+            List<Course> unselected=new ArrayList<>();
             for (Take take:takes){
                 limited.add(take.getCourseId());
             }
-            List<Course> unselected = courseRepository.findCourseByLimited(limited);
+            if (limited.size()==0){
+                unselected=courseRepository.findAll();
+            }else {
+                unselected = courseRepository.findCourseByLimited(limited);
+            }
             int total = unselected.size();
             if (Math.ceil((total + 0.0)/NUM_PER_PAGE) >= page){
                 JSONArray courseArray = new JSONArray();
