@@ -283,7 +283,7 @@ public class ProjectService {
                 posts.add(object);
             }
             JSONArray postsReverse = new JSONArray();
-            for (int i=posts.size()-1;i>=0;i++){
+            for (int i=posts.size()-1;i>=0;i--){
                 postsReverse.set(posts.size()-i-1,posts.get(i));
             }
             result.put("posts",postsReverse);
@@ -315,7 +315,7 @@ public class ProjectService {
                     replies.add(object);
                 }
                 JSONArray repliesReverse = new JSONArray();
-                for (int i=replies.size()-1;i>=0;i++){
+                for (int i=replies.size()-1;i>=0;i--){
                     repliesReverse.set(replies.size()-i-1,replies.get(i));
                 }
                 result.put("replies",repliesReverse);
