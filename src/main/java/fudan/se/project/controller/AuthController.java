@@ -77,29 +77,17 @@ public class AuthController {
     }
 
 
-        @PostMapping("/login")
-    public ResponseEntity<?> login(@Validated @RequestBody LoginRequest request, BindingResult bindingResult) throws JSONException{
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Validated @RequestBody LoginRequest request, BindingResult bindingResult) throws JSONException {
         JSONObject result = Tool.DealParamError(bindingResult);
-        if (result != null){
+        if (result != null) {
             return new ResponseEntity<>(result.toJSONString(), HttpStatus.BAD_REQUEST);
         }
-        result = new JSONObject();
-        String message = authService.login(request.getEmail(), request.getPassword());
-        if(message.contains("success")){
-            //----------test------------
-            String token = message.substring(8);
-//            System.out.println("login success, token = " + token);
-            //----------------------------
-            result.put("message", "success");
-            result.put("token",token);
-            result.put("role",message.charAt(7));
-//            result.put("userDetails",userDetailsService.loadUserByUsername(username));
-            //用jsonobject.toString()方式传输
-            return new ResponseEntity<>(result.toJSONString(), HttpStatus.OK); //200
-        }
-        else {   //wrong password/use not found
-            return Tool.getResponseEntity(message);
-        }
+
+        JSONObject message = authService.login(request.getEmail(), request.getPassword());
+
+        return new ResponseEntity<>(message.toJSONString(), HttpStatus.OK); //200
+
     }
 
     /**

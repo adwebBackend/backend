@@ -1,5 +1,6 @@
 package fudan.se.project.service;
 
+import com.alibaba.fastjson.JSONObject;
 import fudan.se.project.domain.Role;
 import fudan.se.project.domain.UserRole;
 import fudan.se.project.repository.RoleRepository;
@@ -154,7 +155,8 @@ public class AuthService {
         return "email not found";     //用户名已存在
     }
 
-    public String login(String email, String password) {
+    public JSONObject login(String email, String password) {
+        JSONObject result = new JSONObject();
         User user = userRepository.findByEmail(email);
         if(user != null) {
             if(user.getPassword().equals(encode_password(password))){
@@ -165,14 +167,21 @@ public class AuthService {
                 while (iterator.hasNext()){
                     role=iterator.next().getRole().getId();
                 }
-                return "success"+role+token;
+                result.put("message","success");
+                result.put("role",role);
+                result.put("toke",token);
+                result.put("id",user.getUserId());
+                return result;
             }else{
+                result.put("message","wrong password");
                 //       log.warn("log failed");
-                return "wrong password";    //wrong password
+                return result;    //wrong password
             }
         }
-        else
-            return "email not found";
+        else {
+            result.put("message", "email not found");
+            return result;
+        }
     }
 
     private String encode_password(CharSequence charSequence) {

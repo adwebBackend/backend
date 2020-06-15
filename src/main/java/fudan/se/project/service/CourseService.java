@@ -242,7 +242,9 @@ public class CourseService {
 
         List<Project> result = new ArrayList<>();
         for (Participate participate : participates) {
-            limited.remove(limited.indexOf(participate.getProjectId()));
+            int index=limited.indexOf(participate.getProjectId());
+            if (index != -1)
+                limited.remove(index);
         }
 
         for (Integer limit: limited){
