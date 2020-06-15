@@ -140,12 +140,14 @@ public class ProjectService {
         if (cpInclusion!=null&&(teachRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId)!=null||takeRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId)!=null)){
             List<Participate> list = participateRepository.findAllByProjectId(projectId);
             JSONArray others = new JSONArray();
-            JSONObject leader = new JSONObject();
+            JSONArray leaders = new JSONArray();
             for (Participate participate:list){
                 User user = userRepository.findByUserId(participate.getUserId());
                 if (participate.getIsGroupLeader() == 1){
+                    JSONObject leader = new JSONObject();
                     leader.put("student_name",user.getName());
                     leader.put("student_id",user.getUserId());
+                    leaders.add(leader);
                 }
                 else {
                     JSONObject other = new JSONObject();
@@ -154,7 +156,7 @@ public class ProjectService {
                     others.add(other);
                 }
             }
-            result.put("group_leader",leader);
+            result.put("group_leaders",leaders);
             result.put("others",others);
             return result;
         }
