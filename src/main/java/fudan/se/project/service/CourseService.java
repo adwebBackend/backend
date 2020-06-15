@@ -145,6 +145,9 @@ public class CourseService {
                 for (int i = (page - 1)*NUM_PER_PAGE;i < page*NUM_PER_PAGE&&i<total;i ++){
                     JSONObject courseJSON = new JSONObject();
                     Course course=courseRepository.findByCourseId(unselected.get(i).getCourseId());
+                    if (course.getValid() == 0){
+                        continue;
+                    }
                     Teach teach=teachRepository.findByCourseId(course.getCourseId());
                     User teacher=userRepository.findByUserId(teach.getUserId());
                     courseJSON.put("course_id",course.getCourseId());
