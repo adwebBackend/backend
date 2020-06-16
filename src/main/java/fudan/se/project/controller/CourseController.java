@@ -39,9 +39,9 @@ public class CourseController {
     private ParticipateRepository participateRepository;
 
     @CrossOrigin(origins = "*")
-    @PostMapping("/create_course")
+    @PostMapping(value="/create_course",produces = "multipart/form-data")
     @ResponseBody
-    public ResponseEntity<?> createCourse(@Validated @RequestParam("file") MultipartFile file, @Validated @RequestParam("params") String params){
+    public ResponseEntity<?> createCourse(@Validated @RequestParam(value = "file") MultipartFile file, @Validated @RequestParam("params") String params){
         JSONObject json= JSONObject.parseObject(params);
         if (json.getString("course_name")==null||json.getString("course_name").equals("")||json.getString("description")==null||json.getString("description").equals("")||json.getString("start_time")==null||json.getString("end_time")==null||json.getDate("start_time").getTime()<=new Date().getTime()||json.getDate("start_time").getTime()>json.getDate("end_time").getTime()){
             return Tool.getErrorJson("parameter error");

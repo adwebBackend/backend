@@ -65,7 +65,7 @@ public class FileService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (suffix.equals("pdf")){
+        if (suffix.equals(".pdf")){
             return "/files/" + filename;
         }
         return "images/" + filename;
