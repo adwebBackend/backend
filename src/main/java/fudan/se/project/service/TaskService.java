@@ -190,7 +190,6 @@ public class TaskService {
         return "failure";
     }
 
-    @Transactional
     public JSONObject readMessage(int userId,int taskId,int superviseUserId){
         Supervise supervise = superviseRepository.findBySupervisedUserIdAndSuperviseUserIdAndTaskId(userId,superviseUserId,taskId);
         JSONObject object = new JSONObject();
