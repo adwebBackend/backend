@@ -51,7 +51,7 @@ public class TaskService {
         if (teachRepository.findByCourseIdAndUserId(course.getCourseId(),userId) != null || (participate!=null && participate.getIsGroupLeader()==1)){
             Date startTime = request.getStart_time();
             Date endTime = request.getEnd_time();
-            if (startTime.getTime()<new Date().getTime()||startTime.after(endTime)){
+            if (startTime.getTime()<new Date().getTime()||startTime.after(endTime) || startTime.before(project.getProjectStartTime()) || endTime.after(project.getProjectEndTime())){
                 return "failure";
             }
             Task task = new Task(request.getName(),request.getIntroduce(),request.getStart_time(),request.getEnd_time(),request.getImportance());

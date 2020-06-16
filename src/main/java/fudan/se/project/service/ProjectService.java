@@ -81,8 +81,8 @@ public class ProjectService {
         if (course == null) {
             return "course not found";
         }
-        if (startTime.after(endTime)) {
-            return "startTime should be earlier than endTime";
+        if (startTime.before(course.getCourseStartTime()) || endTime.after(course.getCourseEndTime()) || startTime.after(endTime)){
+            return "Time parameter error";
         }
         if (teacherProportion + selfProportion + mutualProportion != 100) {
             return "the sum of teacherProportion and selfProportion and mutualProportion should be 100";
@@ -254,6 +254,7 @@ public class ProjectService {
         CpInclusion cpInclusion=cpInclusionRepository.findByProjectId(projectId);
         if (cpInclusion!=null&&(teachRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId)!=null||takeRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId)!=null)){
             List<UserPost> list = userPostRepository.findAllByProjectId(projectId);
+
             int pagePerNum = 5;
             int total = list.size();
             if((page - 1) * pagePerNum >= total){
