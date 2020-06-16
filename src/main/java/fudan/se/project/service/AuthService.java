@@ -169,7 +169,7 @@ public class AuthService {
                 }
                 result.put("message","success");
                 result.put("role",role);
-                result.put("toke",token);
+                result.put("token",token);
                 result.put("id",user.getUserId());
                 return result;
             }else{
