@@ -147,6 +147,7 @@ public class CourseService {
                     JSONObject courseJSON = new JSONObject();
                     Course course=courseRepository.findByCourseId(unselected.get(i).getCourseId());
                     if (course.getValid() == 0){
+                        total --;
                         continue;
                     }
                     Teach teach=teachRepository.findByCourseId(course.getCourseId());
