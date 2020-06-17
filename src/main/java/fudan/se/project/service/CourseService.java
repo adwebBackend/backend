@@ -73,6 +73,10 @@ public class CourseService {
                 for (Teach teach:teachPage){
                     JSONObject courseJSON = new JSONObject();
                     Course course=courseRepository.findByCourseId(teach.getCourseId());
+                    if (course.getValid() == 0){
+                        total --;
+                        continue;
+                    }
                     courseJSON.put("course_id",course.getCourseId());
                     courseJSON.put("course_name",course.getCourseName());
                     courseJSON.put("background_image",course.getPicture());
@@ -104,6 +108,10 @@ public class CourseService {
                 for (Take take:takePage){
                     JSONObject courseJSON = new JSONObject();
                     Course course=courseRepository.findByCourseId(take.getCourseId());
+                    if (course.getValid() == 0){
+                        total --;
+                        continue;
+                    }
                     Teach teach=teachRepository.findByCourseId(course.getCourseId());
                     User teacher=userRepository.findByUserId(teach.getUserId());
                     courseJSON.put("course_id",course.getCourseId());
