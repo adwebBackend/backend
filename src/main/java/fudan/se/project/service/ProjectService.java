@@ -182,6 +182,7 @@ public class ProjectService {
                     object.put("start_time", task.getTaskStartTime());
                     object.put("end_time", task.getTaskEndTime());
                     object.put("importance", task.getImportance());
+                    object.put("introduce",task.getTaskIntroduce());
                     tasks.add(object);
                 }
                 result.put("tasks", tasks);
@@ -223,6 +224,7 @@ public class ProjectService {
                 object.put("start_time", task.getTaskStartTime());
                 object.put("end_time", task.getTaskEndTime());
                 object.put("importance", task.getImportance());
+                object.put("introduce",task.getTaskIntroduce());
                 object.put("is_accomplished", selectTask.getIsAccomplished());
                 taskList.add(object);
             }
@@ -246,6 +248,7 @@ public class ProjectService {
         result.put("end_time", task.getTaskEndTime());
         result.put("importance", task.getImportance());
         result.put("is_accomplished", selectTask.getIsAccomplished());
+        result.put("introduce",task.getTaskIntroduce());
         return result;
     }
 

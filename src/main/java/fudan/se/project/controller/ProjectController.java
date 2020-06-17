@@ -97,8 +97,8 @@ public class ProjectController {
     @GetMapping("/see_task")
     @ResponseBody
     public ResponseEntity<?> seeTask(@Validated @RequestParam(value = "task_id") int taskId) {
-//        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        int userId = 1;
+        int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
+
         JSONObject result = projectService.seeTask(userId, taskId);
         return Tool.getResponseEntity(result);
     }

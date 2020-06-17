@@ -66,7 +66,7 @@ public class FileService {
             e.printStackTrace();
         }
         if (suffix.equals(".pdf")){
-            return "/files/" + filename;
+            return "files/" + filename;
         }
         return "images/" + filename;
 //        return saveDir + filename;

@@ -48,6 +48,7 @@ public class CourseService {
             Date startTime = params.getDate("start_time");
             Date endTime = params.getDate("end_time");
             Course course = new Course(courseName,description,startTime,endTime,backgroundImage);
+            course.setValid(1);
             courseRepository.save(course);
 
             int courseId = course.getCourseId();
