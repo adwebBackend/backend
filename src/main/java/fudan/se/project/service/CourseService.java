@@ -69,12 +69,14 @@ public class CourseService {
             int total = teaches.size();
             if (Math.ceil((total + 0.0)/NUM_PER_PAGE) >= page){
                 JSONArray courseArray = new JSONArray();
-                Page<Teach> teachPage = teachRepository.findByUserId(userId, PageRequest.of(page - 1, NUM_PER_PAGE));
-                for (Teach teach:teachPage){
+                for (int i = (page - 1)*NUM_PER_PAGE;i < page*NUM_PER_PAGE&&i<total;i ++){
+                    Teach teach = teaches.get(i);
                     JSONObject courseJSON = new JSONObject();
                     Course course=courseRepository.findByCourseId(teach.getCourseId());
                     if (course.getValid() == 0){
-                        total --;
+                        teaches.remove(teach);
+                        total--;
+                        i--;
                         continue;
                     }
                     courseJSON.put("course_id",course.getCourseId());
@@ -104,12 +106,14 @@ public class CourseService {
             int total = takes.size();
             if (Math.ceil((total + 0.0)/NUM_PER_PAGE) >= page){
                 JSONArray courseArray = new JSONArray();
-                Page<Take> takePage = takeRepository.findByUserId(userId, PageRequest.of(page - 1, NUM_PER_PAGE));
-                for (Take take:takePage){
+                for (int i = (page - 1)*NUM_PER_PAGE;i < page*NUM_PER_PAGE&&i<total;i ++){
+                    Take take = takes.get(i);
                     JSONObject courseJSON = new JSONObject();
                     Course course=courseRepository.findByCourseId(take.getCourseId());
                     if (course.getValid() == 0){
-                        total --;
+                        takes.remove(take);
+                        total--;
+                        i--;
                         continue;
                     }
                     Teach teach=teachRepository.findByCourseId(course.getCourseId());
@@ -153,9 +157,11 @@ public class CourseService {
                 JSONArray courseArray = new JSONArray();
                 for (int i = (page - 1)*NUM_PER_PAGE;i < page*NUM_PER_PAGE&&i<total;i ++){
                     JSONObject courseJSON = new JSONObject();
-                    Course course=courseRepository.findByCourseId(unselected.get(i).getCourseId());
+                    Course course = unselected.get(i);
                     if (course.getValid() == 0){
-                        total --;
+                        unselected.remove(course);
+                        total--;
+                        i--;
                         continue;
                     }
                     Teach teach=teachRepository.findByCourseId(course.getCourseId());
