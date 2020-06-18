@@ -18,6 +18,7 @@ import javax.transaction.Transactional;
 import javax.xml.transform.sax.SAXResult;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.UUID;
 
@@ -117,12 +118,15 @@ public class FileService {
             }
 
             String path = file.getPath();
-            String filepath = path.replace("\\", "/");
+            String filepath = "/var/www/html/"+path.replace("\\", "/");
             File file1 = new File(filepath);
-
             String suffix = path.substring(file.getPath().lastIndexOf("."));
             String fileName = file.getFilename() + suffix;
-            response.setHeader("Content-Disposition", "attachment;fileName=" + fileName);
+            try {
+                response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20"));
+            }catch (UnsupportedEncodingException e){
+                e.printStackTrace();
+            }
 
             byte[] buff = new byte[1024];
             BufferedInputStream bis = null;
