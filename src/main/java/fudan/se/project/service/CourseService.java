@@ -66,6 +66,14 @@ public class CourseService {
         if (authService.checkAuthor("teacher",userId)){
 
             List<Teach> teaches = teachRepository.findAllByUserId(userId);
+            Iterator<Teach> iterator = teaches.iterator();
+            while (iterator.hasNext()){
+                Teach teach = iterator.next();
+                Course course=courseRepository.findByCourseId(teach.getCourseId());
+                if (course.getValid() == 0){
+                    iterator.remove();
+                }
+            }
             int total = teaches.size();
             if (Math.ceil((total + 0.0)/NUM_PER_PAGE) >= page){
                 JSONArray courseArray = new JSONArray();
@@ -73,12 +81,12 @@ public class CourseService {
                     Teach teach = teaches.get(i);
                     JSONObject courseJSON = new JSONObject();
                     Course course=courseRepository.findByCourseId(teach.getCourseId());
-                    if (course.getValid() == 0){
-                        teaches.remove(teach);
-                        total--;
-                        i--;
-                        continue;
-                    }
+//                    if (course.getValid() == 0){
+//                        teaches.remove(teach);
+//                        total--;
+//                        i--;
+//                        continue;
+//                    }
                     courseJSON.put("course_id",course.getCourseId());
                     courseJSON.put("course_name",course.getCourseName());
                     courseJSON.put("background_image",course.getPicture());
@@ -103,6 +111,14 @@ public class CourseService {
         if (authService.checkAuthor("student",userId)){
 
             List<Take> takes = takeRepository.findAllByUserId(userId);
+            Iterator<Take> iterator = takes.iterator();
+            while (iterator.hasNext()){
+                Take take = iterator.next();
+                Course course=courseRepository.findByCourseId(take.getCourseId());
+                if (course.getValid() == 0){
+                    iterator.remove();
+                }
+            }
             int total = takes.size();
             if (Math.ceil((total + 0.0)/NUM_PER_PAGE) >= page){
                 JSONArray courseArray = new JSONArray();
@@ -110,12 +126,12 @@ public class CourseService {
                     Take take = takes.get(i);
                     JSONObject courseJSON = new JSONObject();
                     Course course=courseRepository.findByCourseId(take.getCourseId());
-                    if (course.getValid() == 0){
-                        takes.remove(take);
-                        total--;
-                        i--;
-                        continue;
-                    }
+//                    if (course.getValid() == 0){
+//                        takes.remove(take);
+//                        total--;
+//                        i--;
+//                        continue;
+//                    }
                     Teach teach=teachRepository.findByCourseId(course.getCourseId());
                     User teacher=userRepository.findByUserId(teach.getUserId());
                     courseJSON.put("course_id",course.getCourseId());
@@ -152,18 +168,24 @@ public class CourseService {
             }else {
                 unselected = courseRepository.findCourseByLimited(limited);
             }
+            unselected.removeIf(course -> course.getValid() == 0);
+            for(Course course:unselected){
+                if (course.getValid() == 0){
+                    unselected.remove(course);
+                }
+            }
             int total = unselected.size();
             if (Math.ceil((total + 0.0)/NUM_PER_PAGE) >= page){
                 JSONArray courseArray = new JSONArray();
                 for (int i = (page - 1)*NUM_PER_PAGE;i < page*NUM_PER_PAGE&&i<total;i ++){
                     JSONObject courseJSON = new JSONObject();
                     Course course = unselected.get(i);
-                    if (course.getValid() == 0){
-                        unselected.remove(course);
-                        total--;
-                        i--;
-                        continue;
-                    }
+//                    if (course.getValid() == 0){
+//                        unselected.remove(course);
+//                        total--;
+//                        i--;
+//                        continue;
+//                    }
                     Teach teach=teachRepository.findByCourseId(course.getCourseId());
                     User teacher=userRepository.findByUserId(teach.getUserId());
                     courseJSON.put("course_id",course.getCourseId());
