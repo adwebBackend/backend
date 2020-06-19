@@ -81,12 +81,6 @@ public class CourseService {
                     Teach teach = teaches.get(i);
                     JSONObject courseJSON = new JSONObject();
                     Course course=courseRepository.findByCourseId(teach.getCourseId());
-//                    if (course.getValid() == 0){
-//                        teaches.remove(teach);
-//                        total--;
-//                        i--;
-//                        continue;
-//                    }
                     courseJSON.put("course_id",course.getCourseId());
                     courseJSON.put("course_name",course.getCourseName());
                     courseJSON.put("background_image",course.getPicture());
@@ -126,12 +120,6 @@ public class CourseService {
                     Take take = takes.get(i);
                     JSONObject courseJSON = new JSONObject();
                     Course course=courseRepository.findByCourseId(take.getCourseId());
-//                    if (course.getValid() == 0){
-//                        takes.remove(take);
-//                        total--;
-//                        i--;
-//                        continue;
-//                    }
                     Teach teach=teachRepository.findByCourseId(course.getCourseId());
                     User teacher=userRepository.findByUserId(teach.getUserId());
                     courseJSON.put("course_id",course.getCourseId());
@@ -180,12 +168,6 @@ public class CourseService {
                 for (int i = (page - 1)*NUM_PER_PAGE;i < page*NUM_PER_PAGE&&i<total;i ++){
                     JSONObject courseJSON = new JSONObject();
                     Course course = unselected.get(i);
-//                    if (course.getValid() == 0){
-//                        unselected.remove(course);
-//                        total--;
-//                        i--;
-//                        continue;
-//                    }
                     Teach teach=teachRepository.findByCourseId(course.getCourseId());
                     User teacher=userRepository.findByUserId(teach.getUserId());
                     courseJSON.put("course_id",course.getCourseId());

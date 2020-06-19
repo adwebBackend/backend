@@ -42,11 +42,9 @@ public class FileService {
         String saveDir;
         if (suffix.equals(".pdf")){
             saveDir = "/var/www/html/files/";
-//            saveDir = "D:\\Documents\\AD web\\pj\\files\\";
         }
         else {
             saveDir = "/var/www/html/images/";
-//            saveDir = "D:\\Documents\\AD web\\pj\\courseImages\\";
         }
         File serverFile = new File(saveDir + filename);
 
@@ -70,7 +68,6 @@ public class FileService {
             return "files/" + filename;
         }
         return "images/" + filename;
-//        return saveDir + filename;
     }
 
     public String uploadFile(int userId, MultipartFile file, int projectId){
@@ -149,7 +146,6 @@ public class FileService {
                     try {
                         bis.close();
                     } catch (IOException e) {
-//                        System.out.println(e.getMessage());
                         e.printStackTrace();
                     }
                 }

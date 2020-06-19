@@ -70,7 +70,9 @@ public class ManagerService {
             if (user == null){
                 return "user not found";
             }
-            userRoleRepository.deleteAllByUser(user);
+            if (authService.checkAuthor("admin",user.getUserId())){
+                return "failure";
+            }
             evaluateRepository.deleteAllByEvaluateUserIdOrEvaluatedUserId(id,id);
             likesRepository.deleteAllByUerId(id);
             participateRepository.deleteAllByUserId(id);
@@ -81,6 +83,7 @@ public class ManagerService {
             uploadRepository.deleteAllByUserId(id);
             userPostRepository.deleteAllByUserId(id);
             userReplyRepository.deleteAllByUserId(id);
+            userRoleRepository.deleteAllByUser(user);
             userRepository.delete(user);
             return "success";
         }
@@ -149,6 +152,9 @@ public class ManagerService {
         if (authService.checkAuthor("admin",userId)){
             List<User> users = (List<User>) userRepository.findAll();
             for (User user:users){
+                if (authService.checkAuthor("admin",user.getUserId())){
+                    continue;
+                }
                 JSONObject result = new JSONObject();
                 result.put("name",user.getName());
                 result.put("email",user.getEmail());

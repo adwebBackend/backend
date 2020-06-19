@@ -163,18 +163,7 @@ public class TaskService {
             object.put("courseName", course.getCourseName());
             object.put("time",supervise.getSuperviseTime());
             object.put("projectName", project.getProjectName());
-//            object.put("taskIntroduce", task.getTaskIntroduce());
-//            object.put("superviseUserAvatar", superviseUser.getAvatar());
-//            object.put("projectIntroduce", project.getProjectIntroduce());
-//            object.put("courseIntroduce", course.getCourseIntroduce());
             array.add(object);
-//            if (supervise.getIsRead()==0) {
-//                Supervise newS = new Supervise();
-//                BeanUtils.copyProperties(supervise, newS);
-//                newS.setIsRead(1);
-//                superviseRepository.delete(supervise);
-//                superviseRepository.save(newS);
-//            }
         }
         result.put("supervises",array);
         return result;
@@ -197,8 +186,8 @@ public class TaskService {
             if (supervise.getIsRead()==0) {
                 Supervise newS = new Supervise();
                 BeanUtils.copyProperties(supervise, newS);
-                newS.setIsRead(1);
                 superviseRepository.delete(supervise);
+                newS.setIsRead(1);
                 superviseRepository.save(newS);
             }
             User superviseUser = userRepository.findByUserId(supervise.getSuperviseUserId());

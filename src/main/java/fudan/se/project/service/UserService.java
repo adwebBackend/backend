@@ -103,38 +103,8 @@ public class UserService {
     }
 
     public String viewAvatar(int userId){
-
         User user = userRepository.findByUserId(userId);
         if (user != null){
-//            String origin_filepath = user.getAvatar();
-//            String filepath = origin_filepath.replace("\\", "/");
-//            File file = new File(filepath);
-//
-//            byte[] buff = new byte[1024];
-//            BufferedInputStream bis = null;
-//            ServletOutputStream os;
-//            try {
-//                os = response.getOutputStream();
-//                bis = new BufferedInputStream(new FileInputStream(file));
-//                int i = bis.read(buff);
-//                while (i != -1) {
-//                    os.write(buff, 0, buff.length);
-//                    os.flush();
-//                    i = bis.read(buff);
-//                }
-//                os.close();
-//            }
-//            catch (IOException e) {
-//                return "failure";
-//            } finally {
-//                if (bis != null) {
-//                    try {
-//                        bis.close();
-//                    } catch (IOException e) {
-//                        System.out.println(e.getMessage());
-//                    }
-//                }
-//            }
             return user.getAvatar();
         }
         return "failure";
