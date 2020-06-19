@@ -10,7 +10,7 @@ import java.util.Date;
 @Entity                     //实体类的注解，必须注明
 @Table(name = "post")      //指定对应的数据库表
 @JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
-public class Post implements Serializable {
+public class Post implements Serializable,Comparable<Post> {
 
     private static final long serialVersionUID = 4501633417701052945L;
 
@@ -79,6 +79,17 @@ public class Post implements Serializable {
     }
 
     public Post() {
+    }
+
+    @Override
+    public int compareTo(Post post){
+        if (this.postTime.getTime()<post.postTime.getTime()){
+            return 1;
+        }else if (this.postTime.getTime()==post.postTime.getTime()){
+            return 0;
+        }else {
+            return -1;
+        }
     }
 
     @Override

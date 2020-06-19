@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("Duplicates")
 @Service
@@ -257,6 +255,11 @@ public class ProjectService {
         CpInclusion cpInclusion=cpInclusionRepository.findByProjectId(projectId);
         if (cpInclusion!=null&&(teachRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId)!=null||takeRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId)!=null)){
             List<UserPost> list = userPostRepository.findAllByProjectId(projectId);
+            List<Post> postList=new ArrayList<>();
+            for (int i=0;i<list.size();i++){
+                postList.add(postRepository.findByPostId(list.get(i).getPostId()));
+            }
+            Collections.sort(postList);
 
             int pagePerNum = 5;
             int total = list.size();
@@ -267,8 +270,8 @@ public class ProjectService {
             JSONArray posts = new JSONArray();
             for (int i = pagePerNum * (page - 1);i < Math.min(pagePerNum * page,total);i ++){
                 JSONObject object = new JSONObject();
-                UserPost userPost = list.get(i);
-                Post post = postRepository.findByPostId(userPost.getPostId());
+                Post post = postList.get(i);
+                UserPost userPost=userPostRepository.findByPostId(post.getPostId());
                 User student = userRepository.findByUserId(userPost.getUserId());
                 Likes likes = likesRepository.findByUerIdAndPostId(userId,userPost.getPostId());
                 object.put("post_id",post.getPostId());
@@ -286,11 +289,8 @@ public class ProjectService {
                 }
                 posts.add(object);
             }
-            JSONArray postsReverse = new JSONArray();
-            for (int i=posts.size()-1;i>=0;i--){
-                postsReverse.set(posts.size()-i-1,posts.get(i));
-            }
-            result.put("posts",postsReverse);
+
+            result.put("posts",posts);
             result.put("total",total);
             return result;
         }
