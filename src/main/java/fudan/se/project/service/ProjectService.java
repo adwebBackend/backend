@@ -458,8 +458,10 @@ public class ProjectService {
             result.put("message", "failure");
             return result;
         }
-
-        int grade = (project.getTeacherProportion() * participate.getTeacherGrade() + project.getSelfProportion() * participate.getSelfGrade() + project.getMutualProportion() * participate.getMutualGrade()) / 100;
+        int teacherGrade = participate.getTeacherGrade()>0?project.getTeacherProportion() * participate.getTeacherGrade():0;
+        int selfGrade = participate.getSelfGrade()>0?project.getSelfProportion()*participate.getSelfGrade():0;
+        int mutualGrade = participate.getMutualGrade()>0?project.getMutualProportion()*participate.getMutualGrade():0;
+        int grade = (teacherGrade+selfGrade+mutualGrade) / 100;
         result.put("teacher_grade", participate.getTeacherGrade());
         result.put("self_grade", participate.getSelfGrade());
         result.put("mutual_grade", participate.getMutualGrade());
@@ -536,7 +538,10 @@ public class ProjectService {
         for (Participate participate:participateList){
             JSONObject object = new JSONObject();
             User user=userRepository.findByUserId(participate.getUserId());
-            int grade = (project.getTeacherProportion() * participate.getTeacherGrade() + project.getSelfProportion() * participate.getSelfGrade() + project.getMutualProportion() * participate.getMutualGrade()) / 100;
+            int teacherGrade = participate.getTeacherGrade()>0?project.getTeacherProportion() * participate.getTeacherGrade():0;
+            int selfGrade = participate.getSelfGrade()>0?project.getSelfProportion()*participate.getSelfGrade():0;
+            int mutualGrade = participate.getMutualGrade()>0?project.getMutualProportion()*participate.getMutualGrade():0;
+            int grade = (teacherGrade+selfGrade+mutualGrade) / 100;
             object.put("username",user.getName());
             object.put("user_id",user.getUserId());
             object.put("avatar",user.getAvatar());
