@@ -54,6 +54,7 @@ public class ManagerService {
             }
             String password = DigestUtils.md5DigestAsHex(((CharSequence) request.getPassword()).toString().getBytes());
             User user = new User(request.getEmail(),password);
+            user.setAvatar("images/moren.jpg");
             userRepository.save(user);
             Role role = roleRepository.findByRoleName("teacher");
             UserRole userRole = new UserRole(user,role);
