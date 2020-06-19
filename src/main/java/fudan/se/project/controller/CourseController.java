@@ -20,7 +20,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.persistence.Table;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -34,17 +37,22 @@ public class CourseController {
     private CourseService courseService;
     @Autowired
     private FileService fileService;
-
     @Autowired
     private ParticipateRepository participateRepository;
 
     @CrossOrigin(origins = "*")
     @PostMapping("/create_course")
     @ResponseBody
-    public ResponseEntity<?> createCourse(@Validated @RequestParam("file") MultipartFile file, @Validated @RequestParam("params") String params){
+    public ResponseEntity<?> createCourse(@Validated @RequestParam("file") MultipartFile file, @Validated @RequestParam("params") String params) throws IOException {
         JSONObject json= JSONObject.parseObject(params);
         if (json.getString("course_name")==null||json.getString("course_name").equals("")||json.getString("description")==null||json.getString("description").equals("")||json.getString("start_time")==null||json.getString("end_time")==null||json.getDate("start_time").getTime()<=new Date().getTime()||json.getDate("start_time").getTime()>json.getDate("end_time").getTime()){
             return Tool.getErrorJson("parameter error");
+        }
+        //检查是否是图片
+        BufferedImage bi = ImageIO.read(file.getInputStream());
+        if (bi == null){
+            json.put("message","An image is required");
+            return new ResponseEntity<>(json.toJSONString(),HttpStatus.BAD_REQUEST);
         }
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         String backgroundImage = fileService.saveFile(file);
@@ -68,7 +76,7 @@ public class CourseController {
         return Tool.getResponseEntity( courseService.studentViewCourses(userId,page));
     }
 
-    @GetMapping("student_view_unselected_courses")
+    @GetMapping("/student_view_unselected_courses")
     @ResponseBody
     public ResponseEntity<?> studentViewUnselectedCourses(int page){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
