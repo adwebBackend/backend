@@ -235,8 +235,16 @@ public class ProjectService {
 
     public JSONObject seeTask(int userId,int taskId){
         JSONObject result = new JSONObject();
+        PtInclusion ptInclusion=ptInclusionRepository.findByTaskId(taskId);
+        if (ptInclusion==null){
+            result.put("message", "failure");
+            return result;
+        }
         SelectTask selectTask = selectTaskRepository.findByTaskIdAndUserId(taskId,userId);
-        if (selectTask == null){
+        CpInclusion cpInclusion=cpInclusionRepository.findByProjectId(ptInclusion.getProjectId());
+        Teach teach=teachRepository.findByCourseId(cpInclusion.getCourseId());
+
+        if (selectTask == null&&teach==null){
             result.put("message", "failure");
             return result;
         }
@@ -245,7 +253,8 @@ public class ProjectService {
         result.put("start_time", task.getTaskStartTime());
         result.put("end_time", task.getTaskEndTime());
         result.put("importance", task.getImportance());
-        result.put("is_accomplished", selectTask.getIsAccomplished());
+        if (selectTask!=null)
+            result.put("is_accomplished", selectTask.getIsAccomplished());
         result.put("introduce",task.getTaskIntroduce());
         return result;
     }

@@ -104,6 +104,7 @@ public class ProjectController {
     }
 
 
+
     @GetMapping("/view_posts")
     @ResponseBody
     public ResponseEntity<?> viewPosts(@Validated @RequestParam(value = "project_id") int projectId, @Validated @RequestParam(value = "page") int page){
