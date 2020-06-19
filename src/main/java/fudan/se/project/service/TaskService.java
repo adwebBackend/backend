@@ -11,6 +11,8 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,7 +41,7 @@ public class TaskService {
     @Autowired
     private CourseRepository courseRepository;
 
-    public String setTask(int userId, SetTaskRequest request){
+    public String setTask(int userId, SetTaskRequest request) throws ParseException {
         int projectId = request.getProject_id();
         Project project = projectRepository.findByProjectId(projectId);
         if (project == null){
@@ -51,8 +53,13 @@ public class TaskService {
         if (teachRepository.findByCourseIdAndUserId(course.getCourseId(),userId) != null || (participate!=null && participate.getIsGroupLeader()==1)){
             Date startTime = request.getStart_time();
             Date endTime = request.getEnd_time();
-            if (startTime.getTime()<new Date().getTime()||startTime.after(endTime) || startTime.before(project.getProjectStartTime()) || endTime.after(project.getProjectEndTime())){
-                return "failure";
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date pStart = sdf.parse(sdf.format(startTime));
+            Date pEnd =  sdf.parse(sdf.format(endTime));
+            Date cStart =  sdf.parse(sdf.format(project.getProjectStartTime()));
+            Date cEnd =  sdf.parse(sdf.format(project.getProjectEndTime()));
+            if (startTime.getTime()<new Date().getTime()||startTime.after(endTime) || pStart.before(cStart) || pEnd.after(cEnd) || pStart.after(pEnd)){
+                return "Time parameter error";
             }
             Task task = new Task(request.getName(),request.getIntroduce(),request.getStart_time(),request.getEnd_time(),request.getImportance());
             taskRepository.save(task);

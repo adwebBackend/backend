@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.Date;
 
 @SuppressWarnings("Duplicates")
@@ -38,7 +39,7 @@ public class ProjectController {
 
     @PostMapping("/create_project")
     @ResponseBody
-    public ResponseEntity<?> createProject(@Validated @RequestBody ProjectRequest request, BindingResult bindingResult){
+    public ResponseEntity<?> createProject(@Validated @RequestBody ProjectRequest request, BindingResult bindingResult) throws ParseException {
         JSONObject result = Tool.DealParamError(bindingResult);
         if (result != null){
             return new ResponseEntity<>(result.toJSONString(), HttpStatus.BAD_REQUEST);

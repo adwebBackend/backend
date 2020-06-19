@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.Table;
 import javax.swing.*;
 import java.io.StringReader;
+import java.text.ParseException;
 
 @SuppressWarnings("Duplicates")
 @RestController
@@ -28,7 +29,7 @@ public class TaskController {
 
     @PostMapping("/set_task")
     @ResponseBody
-    public ResponseEntity<?> setTask(@Validated @RequestBody SetTaskRequest request){
+    public ResponseEntity<?> setTask(@Validated @RequestBody SetTaskRequest request) throws ParseException {
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
         JSONObject result = new JSONObject();
         String message = taskService.setTask(userId,request);

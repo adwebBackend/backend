@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @SuppressWarnings("Duplicates")
@@ -61,7 +63,7 @@ public class ProjectService {
     private TakeRepository takeRepository;
 
 
-    public String createProject(int userId, ProjectRequest request) {
+    public String createProject(int userId, ProjectRequest request) throws ParseException {
         if (teachRepository.findByCourseIdAndUserId(request.getCourse_id(), userId) == null) {
             return "failure";
         }
@@ -79,7 +81,12 @@ public class ProjectService {
         if (course == null) {
             return "course not found";
         }
-        if (startTime.before(course.getCourseStartTime()) || endTime.after(course.getCourseEndTime()) || startTime.after(endTime)){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date pStart = sdf.parse(sdf.format(startTime));
+        Date pEnd =  sdf.parse(sdf.format(endTime));
+        Date cStart =  sdf.parse(sdf.format(course.getCourseStartTime()));
+        Date cEnd =  sdf.parse(sdf.format(course.getCourseEndTime()));
+        if (pStart.before(cStart) || pEnd.after(cEnd) || pStart.after(pEnd)){
             return "Time parameter error";
         }
         if (teacherProportion + selfProportion + mutualProportion != 100) {
