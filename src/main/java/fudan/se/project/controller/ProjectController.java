@@ -162,13 +162,7 @@ public class ProjectController {
     @ResponseBody
     public ResponseEntity<?> like(@Validated@RequestParam(value = "post_id")int postId){
         int userId = Integer.parseInt((((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()));
-        String message = projectService.like(userId,postId);
-        JSONObject result = new JSONObject();
-        result.put("message",message);
-        if (message.equals("failure")){
-            return new ResponseEntity<>(result.toJSONString(),HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(result.toJSONString(),HttpStatus.OK);
+        return Tool.getResponseEntity(projectService.like(userId,postId));
     }
 
     @GetMapping("/add_project")

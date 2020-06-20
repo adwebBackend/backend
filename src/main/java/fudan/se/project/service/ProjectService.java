@@ -402,8 +402,9 @@ public class ProjectService {
     }
 
     @Transactional
-    public String like(int userId,int postId){
+    public JSONObject like(int userId,int postId){
         UserPost userPost=userPostRepository.findByPostId(postId);
+        JSONObject result = new JSONObject();
         if (userPost!=null){
             CpInclusion cpInclusion=cpInclusionRepository.findByProjectId(userPost.getProjectId());
             Teach teach=teachRepository.findByCourseIdAndUserId(cpInclusion.getCourseId(),userId);
@@ -415,20 +416,25 @@ public class ProjectService {
                     likesRepository.save(likes);
                     post.setLikesCount(post.getLikesCount() + 1);
                     postRepository.save(post);
-                    return "success";
+                    result.put("count",post.getLikesCount());
+                    result.put("message","success");
+                    return result;
                 }
                 else {
                     Likes likes = likesRepository.findByUerIdAndPostId(userId,postId);
                     likesRepository.delete(likes);
                     post.setLikesCount(post.getLikesCount() - 1);
                     postRepository.save(post);
-                    return "likes canceled";
+                    result.put("count",post.getLikesCount());
+                    result.put("message","likes canceled");
+                    return result;
                 }
             }
-            return "failure";
+            result.put("message","failure");
+            return result;
         }
-        return "failure";
-
+        result.put("message","failure");
+        return result;
     }
 
     public String addProject(int userId,int projectId){
